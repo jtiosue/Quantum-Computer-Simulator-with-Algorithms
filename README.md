@@ -11,7 +11,7 @@ To see examples of how to use this code, look at src/test.cpp. To see explainati
 
 ## Example
 
-```
+```C++
 #include "quantum.h"
 #include "rand.h"
 #include "qalgorithms.h"
@@ -46,3 +46,11 @@ int main() {
   return 0;
 }
 ```
+
+## QAlgorithms
+
+I have implemented various algorithms that apply a series of quantum logic gates to a register in order to achieve some goal. There is quantum ripple carry addition, quantum modular arithitic using QFT and IQFT (coming soon), Grover's search algorithm, and Shor's factorization algorithm (not currently quantum; uses a classical period finding algorithm - I will implement the quantum period finding algorithm soon).
+
+## Applying your own gates
+
+See quantum.h/quantum.cpp and unitary.h/unitary.cpp. The Register class has a method to apply_gate(Unitary u, vector<int> v); this applies the gate given by u to the qubits given in v.

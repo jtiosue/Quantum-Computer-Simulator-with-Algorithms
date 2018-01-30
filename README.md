@@ -1,9 +1,7 @@
 # Quantum-Computer-Simulator-with-Algorithms
-C++ simulator of quantum registers and quantum algorithms
+*C++ simulator of quantum registers and quantum algorithms*
 
 **Note: need std=c++11 tag to compile. In src, run g++ std=c++11 -o main \*.cpp**
-
-*Note: I have not implemented the quantum period finding algorithm yet, currently Shor's factorization algorithm uses a classical period finding algorithm.*
 
 To see examples of how to use this code, look at src/test.cpp. To see explainations and proofs of the various algorithms, see explaination/math.pdf.
 

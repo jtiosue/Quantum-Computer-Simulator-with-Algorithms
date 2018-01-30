@@ -5,8 +5,6 @@ C++ simulator of quantum registers and quantum algorithms
 
 *Note: I have not implemented the quantum period finding algorithm yet, currently Shor's factorization algorithm uses a classical period finding algorithm.*
 
-*Note: My modular addition method that uses the quantum and inverse quantum fourier transform is not working.*
-
 To see examples of how to use this code, look at src/test.cpp. To see explainations and proofs of the various algorithms, see explaination/math.pdf.
 
 ## Example
@@ -49,7 +47,7 @@ int main() {
 
 ## QAlgorithms
 
-I have implemented various algorithms that apply a series of quantum logic gates to a register in order to achieve some goal. There is quantum ripple carry addition, quantum modular arithitic using QFT and IQFT (coming soon), Grover's search algorithm, and Shor's factorization algorithm (not currently quantum; uses a classical period finding algorithm - I will implement the quantum period finding algorithm soon).
+I have implemented various algorithms that apply a series of quantum logic gates to a register in order to achieve some goal. There is quantum ripple carry addition, quantum modular arithitic using QFT and IQFT, Grover's search algorithm, and Shor's factorization algorithm with quantum period finding (coming soon).
 
 ## Applying your own gates
 

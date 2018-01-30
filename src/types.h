@@ -6,11 +6,9 @@
 #include <complex>
 #include <vector>
 
-using namespace std;
-
-typedef complex<double> amp;
-typedef map<string, amp> state_map;
-typedef vector<int> vec_int;
-typedef vector<string> vec_states;
+typedef std::complex<double> amp;
+typedef std::map<std::string, amp> state_map;
+typedef std::vector<unsigned int> vec_int;
+typedef std::vector<std::string> vec_states;
 
 #endif

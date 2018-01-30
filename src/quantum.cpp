@@ -1,4 +1,3 @@
-
 #include <cstdlib>
 #include "quantum.h"
 #include "rand.h"
@@ -9,7 +8,7 @@ using namespace std;
 
 // Register class
 
-Register::Register(int num_qubits) {
+Register::Register(unsigned int num_qubits) {
 	/*
 	By default, initializes vaccum (|000...>) to amplitude
 	one and the rest zero. This can be adjust with logic
@@ -27,7 +26,7 @@ Register::~Register() {
 }
 */
 
-vec_states Register::all_states(int n) {
+vec_states Register::all_states(unsigned int n) {
 	/* 
 	returns vector of all the possible n qubit states
 	IN ORDER, where we choose the basis to be in increasing
@@ -96,9 +95,11 @@ string Register::measure() {
 			return s;
 		}
 	}
+
+	//return "uh oh";
 }
 
-char Register::measure(int qubit) {
+char Register::measure(unsigned int qubit) {
 	/*
 	Measure a qubit, and collapse it.
 	Update the states map to have 1 probability of having a particular
@@ -210,7 +211,7 @@ void Register::apply_gate(Unitary u, vec_int qubits) {
 // listed below can be implemented by just creating the unitary operator
 // corresponding to the gate and calling the apply_gate function.
 
-void Register::Hadamard(int qubit) {
+void Register::Hadamard(unsigned int qubit) {
 	/*
 	zero -> n-1 qubit indexing.
 	Hadamard operator on single qubit is
@@ -220,7 +221,7 @@ void Register::Hadamard(int qubit) {
 	apply_gate(Unitary::Hadamard(), v);
 }
 
-void Register::PhaseShift(int qubit, double theta) {
+void Register::PhaseShift(unsigned int qubit, double theta) {
 	/*
 	zero -> n-1 qubit indexing.
 	Phase shift by theta is
@@ -230,14 +231,14 @@ void Register::PhaseShift(int qubit, double theta) {
 	apply_gate(Unitary::PhaseShift(theta), v);
 }
 
-void Register::PiOverEight(int qubit) {
+void Register::PiOverEight(unsigned int qubit) {
 	// zero->n - 1 qubit indexing.
 	// PhaseShift(qubit, pi / 4.0);
 	vec_int v; v.push_back(qubit);
 	apply_gate(Unitary::PiOverEight(), v);
 }
 
-void Register::PauliX(int qubit) {
+void Register::PauliX(unsigned int qubit) {
 	/*
 	zero->n - 1 qubit indexing.
 	Pauli-X gates, also the NOT gate, for a single qubit is
@@ -247,7 +248,7 @@ void Register::PauliX(int qubit) {
 	apply_gate(Unitary::PauliX(), v);
 }
 
-void Register::PauliY(int qubit) {
+void Register::PauliY(unsigned int qubit) {
 	/*
 	zero->n - 1 qubit indexing.
 	Pauli-Y gate for a single qubit is
@@ -257,7 +258,7 @@ void Register::PauliY(int qubit) {
 	apply_gate(Unitary::PauliY(), v);
 }
 
-void Register::PauliZ(int qubit) {
+void Register::PauliZ(unsigned int qubit) {
 	/*
 	zero->n - 1 qubit indexing.
 	Pauli-Z gate for a single qubit is
@@ -268,7 +269,7 @@ void Register::PauliZ(int qubit) {
 	apply_gate(Unitary::PauliZ(), v);
 }
 
-void Register::ControlledNot(int control_qubit, int target_qubit) {
+void Register::ControlledNot(unsigned int control_qubit, unsigned int target_qubit) {
 	/*
 	zero -> num_qubits-1 qubit indexing.
 	ControlledNot gate is just the NOT gate (PauliX) on the target 
@@ -278,7 +279,7 @@ void Register::ControlledNot(int control_qubit, int target_qubit) {
 	apply_gate(Unitary::ControlledNot(), v);
 }
 
-void Register::Toffoli(int control_qubit1, int control_qubit2, int target_qubit) {
+void Register::Toffoli(unsigned int control_qubit1, unsigned int control_qubit2, unsigned int target_qubit) {
 	/*
 	zero -> num_qubits-1 qubit indexing.
 	Toffoli gate, also known as the Controlled-Controlled-Not gate 
@@ -289,7 +290,7 @@ void Register::Toffoli(int control_qubit1, int control_qubit2, int target_qubit)
 	apply_gate(Unitary::Toffoli(), v);
 }
 
-void Register::ControlledPhaseShift(int control_qubit, int target_qubit, double theta) {
+void Register::ControlledPhaseShift(unsigned int control_qubit, unsigned int target_qubit, double theta) {
 	/*
 	zero -> num_qubits-1 qubit indexing.
 	Just the phase shift gate on the target qubit if the first qubit is 1.
@@ -298,7 +299,7 @@ void Register::ControlledPhaseShift(int control_qubit, int target_qubit, double 
 	apply_gate(Unitary::ControlledPhaseShift(theta), v);
 }
 
-void Register::Swap(int qubit1, int qubit2) {
+void Register::Swap(unsigned int qubit1, unsigned int qubit2) {
 	/*
 	zero -> num_qubits-1 qubit indexing.
 	Swap qubit1 and qubit2.
@@ -311,7 +312,7 @@ void Register::Swap(int qubit1, int qubit2) {
 	ControlledNot(qubit1, qubit2);
 }
 
-void Register::Ising(int qubit1, int qubit2, double theta) {
+void Register::Ising(unsigned int qubit1, unsigned int qubit2, double theta) {
 	vec_int v; v.push_back(qubit1); v.push_back(qubit2);
 	apply_gate(Unitary::Ising(theta), v);
 }

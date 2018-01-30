@@ -1,12 +1,13 @@
 #include "unitary.h"
+#include <iostream>
 
 
-Unitary::Unitary(int dimension) {
+Unitary::Unitary(unsigned int dimension) {
 	// Initialize square matrix to zero.
 	this->dimension = dimension;
 
 	matrix = new amp *[dimension];
-	for (int i = 0; i < dimension; i++) matrix[i] = new amp[dimension];
+	for (unsigned int i = 0; i < dimension; i++) matrix[i] = new amp[dimension];
 }
 
 /*
@@ -18,7 +19,7 @@ Unitary::~Unitary() {
 }
 */
 
-amp *Unitary::operator[](int i) {
+amp *Unitary::operator[](unsigned int i) {
 	return matrix[i];
 }
 
@@ -43,12 +44,16 @@ std::ostream &operator<<(std::ostream &os, Unitary &U) {
 		for (int c = 0; c < U.dimension; c++) {
 			os << U[r][c] << "\t";
 		}
-		os << std::endl;
+		os << "\n";
 	}
 	return os;
 }
 
-Unitary Unitary::Identity(int dimension) {
+void Unitary::print_matrix() {
+	std::cout << *this << std::endl;
+}
+
+Unitary Unitary::Identity(unsigned int dimension) {
 	// Unitary is initialized to all zeros
 	// I don't think this is compiler specific.
 	Unitary u(dimension);
@@ -138,7 +143,7 @@ Unitary Unitary::Ising(double theta) {
 	return u;
 }
 
-Unitary Unitary::QFT(int num_qubits) {
+Unitary Unitary::QFT(unsigned int num_qubits) {
 	// Makes the matrix that transforms the system.
 	int N = pow(2, num_qubits); Unitary u(N); 
 	amp omega = exp(2*acos(-1.)*amp(0, 1) / double(N)); // acos(-1) is pi.
@@ -151,7 +156,7 @@ Unitary Unitary::QFT(int num_qubits) {
 	return u;
 }
 
-Unitary Unitary::IQFT(int num_qubits) {
+Unitary Unitary::IQFT(unsigned int num_qubits) {
 	// Complex transpose of the QFT.
 	int N = pow(2, num_qubits); Unitary u(N);
 	amp omega = exp(2 * acos(-1.)*amp(0, -1) / double(N)); // acos(-1) is pi.

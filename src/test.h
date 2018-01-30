@@ -12,8 +12,6 @@ void _test_unitary();
 
 void _test_quantum_add();
 
-void _test_Shor_factorization();
-
 void _test_collapse();
 
 void _test_Grover();

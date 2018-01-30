@@ -9,14 +9,15 @@ class Unitary {
 		amp **matrix;
 
 	public:
-		int dimension;
-		Unitary(int dimension);
+		unsigned int dimension;
+		Unitary(unsigned int dimension);
 		// ~Unitary();
-		amp * operator[](int i);
+		amp * operator[](unsigned int i);
 		Unitary operator*(amp x);
+		void print_matrix();
 		friend std::ostream &operator<<(std::ostream &os, Unitary &U);
 
-		static Unitary Identity(int dimension);
+		static Unitary Identity(unsigned int dimension);
 		static Unitary Hadamard();
 		static Unitary PauliX();
 		static Unitary PauliY();
@@ -28,8 +29,8 @@ class Unitary {
 		static Unitary ControlledPhaseShift(double theta);
 		static Unitary Swap();
 		static Unitary Ising(double theta);
-		static Unitary QFT(int num_qubits);
-		static Unitary IQFT(int num_qubits);
+		static Unitary QFT(unsigned int num_qubits);
+		static Unitary IQFT(unsigned int num_qubits);
 
 		// Matrices to be created upon initialization.
 		// const static Unitary MHadamard;

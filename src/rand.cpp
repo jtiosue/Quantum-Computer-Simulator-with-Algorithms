@@ -1,4 +1,3 @@
-
 #include <ctime>
 #include <cstdlib>
 #include "rand.h"

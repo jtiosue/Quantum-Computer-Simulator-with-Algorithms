@@ -1,11 +1,6 @@
 #include "test.h"
 
-#include <iostream>
-#include <cstdio>
-#include "quantum.h"
-#include "rand.h"
-#include "qalgorithms.h"
-#include "unitary.h"
+using namespace std;
 
 void _test_unitary() {
 	cout << "Testing unitary...\n" << endl;
@@ -53,19 +48,8 @@ void _test_quantum_add() {
 	a = 5; b = 3; n = 7; N = pow(2, n);
 	cout << "\t" << a << "+" << b << " mod " << N << " = " << (a + b) % N << ", Quantum mod add gave: " << ModAdd(a, b, n) << endl;
 
-	a = 5; b = 3; n = 4; N = pow(2, n);
+	a = 5; b = 3; n = 3; N = pow(2, n);
 	cout << "\t" << a << "+" << b << " mod " << N << " = " << (a + b) % N << ", Quantum mod add gave: " << ModAdd(a, b, n) << endl;
-}
-
-void _test_Shor_factorization() {
-	cout << "Testing quantum factorization: Shor's algorithm..." << endl;
-	int a;
-
-	a = 15;
-	cout << "\t" << "a Shor factor of " << a << " is " << Shor(a) << endl;
-
-	a = 21;
-	cout << "\t" << "a Shor factor of " << a << " is " << Shor(a) << endl;
 }
 
 void _test_collapse() {

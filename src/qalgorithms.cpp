@@ -1,26 +1,26 @@
-
 #include <cmath>
 #include <algorithm>
-#include <functional>
 #include "quantum.h"
 #include "qalgorithms.h"
 #include "rand.h"
+
+#include <iostream>
 
 
 const double pi = acos(-1.0);
 
 // Useful functions
 
-int char_to_int(char c) {return c - '0';}
+unsigned int char_to_int(char c) {return c - '0';}
 
-int gcd(unsigned int a, unsigned int b) {
+unsigned int gcd(unsigned int a, unsigned int b) {
 	// Find the greatest common divisor between a and b.
-	int t;
+	unsigned int t;
 	while (b != 0) { t = b; b = a % b; a = t; }
 	return a;
 }
 
-int binary_to_base10(string s) {
+unsigned int binary_to_base10(string s) {
 	/*
 	Convert binary number to base 10 with bit shifts.
 
@@ -43,15 +43,26 @@ int binary_to_base10(string s) {
 
 	// BITSHIFT WAY
 	int result = 0;
-	for (int i = 0; i < s.length(); i++) {
+	for (unsigned int i = 0; i < s.length(); i++) {
 		result ^= (char_to_int(s[i]) << (s.length() - i - 1));
 	}
 	return result;
 }
 
+string base10_to_binary(unsigned int x) {
+	if (x == 0) return "0";
+	string s = "";
+	while (x > 0) {
+		if (x % 2 == 0) s = "0" + s;
+		else s = "1" + s;
+		x /= 2;
+	}
+	return s;
+}
+
 // QUANTUM FOURIER TRANSFORM
 
-void QFT(Register *reg, int start, int end) {
+void QFT(Register *reg, unsigned int start, unsigned int end) {
 	/*
 	Apply the quantum fourier transform to qubits
 	start through end - 1. int end is noninclusive.
@@ -69,18 +80,18 @@ void QFT(Register *reg, int start, int end) {
 	*/
 
 	// REALISTICALLY, WITH SINGLE AND DOUBLE QUBIT GATES
-	for (int j = start; j < end; j++) {
+	for (unsigned int j = start; j < end; j++) {
 		reg->Hadamard(j);
-		for (int k = 1; k < end - j; k++) {
-			reg->ControlledPhaseShift(j+k, j, pi/pow(2, k));
+		for (unsigned int k = 1; k < end - j; k++) {
+			reg->ControlledPhaseShift(j + k, j, pi/pow(2, k));
 		}
 	}
-	for (int i = 0; i < floor((end-start) / 2.0); i++) reg->Swap(start+i, end-i-1);
+	for (unsigned int i = 0; i < floor((end-start) / 2.0); i++) reg->Swap(start+i, end-i-1);
 }
 
 // INVERSE QUANTUM FOURIER TRANSFORM
 
-void IQFT(Register *reg, int start, int end) {
+void IQFT(Register *reg, unsigned int start, unsigned int end) {
 	// Just run QFT backwords for qubits start through end - 1.
 	// start and end are set by default be zero in the header file.
 
@@ -94,83 +105,32 @@ void IQFT(Register *reg, int start, int end) {
 	*/
 
 	// REALISTCALLY, WITH SINGLE AND DOUBLE QUBIT GATES
+	///*
+	for (unsigned int i = 0; i < floor((end-start) / 2.0); i++) reg->Swap(start+i, end-i-1);
 
-	for (int i = 0; i < floor((end-start) / 2.0); i++) reg->Swap(start+i, end-i-1);
-
-	for (int j = end-1; j >= start; j--) {
-		for (int k = end-j-1; k >= 1; k--) {
-			reg->ControlledPhaseShift(j + k, j, -pi / pow(2, k));
+	// note: can't use unsigned int's here because unsigned j=-1
+	// is always greater than zero. NEED to convert end and start to int
+	// in order to properly compare.
+	for (int j = int(end) - 1; j >= int(start); j--) {
+		for (int k = int(end)-j-1; k >= 1; k--) {
+			// don't need to explicilty convert to unsigned int here, but might as well.
+			reg->ControlledPhaseShift((unsigned int)(j + k), (unsigned int)j, -pi / pow(2, k));
 		}
 		reg->Hadamard(j);
 	}
+	//*/
 }
 
-
-// FACTORIZTION
-
-int find_period_classical(std::function<int(int)> f) {
-	/*
-	classical algorithm (Brent's algorithm) to find the period r of the function
-		int f(int x)
-	*/
-
-	int r = 1; int tortoise = 0; int hare = 1; int power = 1;
-
-	while (tortoise != hare) {
-		if (power == r) {tortoise = hare; power *= 2; r = 0;}
-		hare = f(hare);
-		r++;
-	}
-	return r;
-}
-
-int find_period_quantum(std::function<int(int)> f) {
-	/*
-	Quantum algorithm to find the period r of the function
-		int f(int x)
-	*/
-	return 0;
-}
-
-int find_period(int a, int N) {
-	/*
-	algorithm to find the period r of the function
-		f(x) = a^x mod N
-	*/
-
-	auto f = [a, N](int x) -> int { return int(pow(a, x)) % N; };
-	return find_period_classical(f);
-	// return find_period_quantum(f);
-}
-
-int Shor(unsigned int N, unsigned int depth_limit) { 
-	/*
-	Find a single factor of N. N must not be an integer
-	power of a prime. See the notes for an explaination of
-	how Shor's algorithm works. The quantum computation only
-	occurs in the find_period function.
-
-	depth_limit is set by default in header. This limits the recursive depth.
-
-	set_srand() must be called before using this function.
-	*/
-	if (depth_limit <= 0) return 1;
-	int a = int(floor(get_rand()*N)); int g = gcd(a, N);
-	if (g != 1) return g; // we're done.
-	int r = find_period(a, N); int n = pow(a, r / 2);
-	if (r % 2 == 1 || n % N == N-1) return Shor(N, depth_limit-1); // start over
-	return gcd(n - 1, N); // v = gcd(n+1, N); // we're done.
-}
 
 // RIPPLE CARRY ADDITION
 
-void HalfAdder(int qubit1, int qubit2, int carry, Register *s) {
+void HalfAdder(unsigned int qubit1, unsigned int qubit2, unsigned int carry, Register *s) {
 	s->Toffoli(qubit1, qubit2, carry); // Carry (AND)
 	s->ControlledNot(qubit1, qubit2); // Sum (XOR)
 	// Sum is stored in qubit2.
 }
 
-void FullAdder(int qubit1, int qubit2, int carryin, int carryout, Register *s) {
+void FullAdder(unsigned int qubit1, unsigned int qubit2, unsigned int carryin, unsigned int carryout, Register *s) {
 	s->Toffoli(qubit1, qubit2, carryout); // Carry (AND)
 	s->ControlledNot(qubit1, qubit2); // Sum (XOR)
 	s->Toffoli(qubit2, carryin, carryout);	// Carry (AND)
@@ -198,16 +158,16 @@ void Add(Register *reg) {
 	NOTE that this method affects the inputed register, but the register will not be measured.
 	*/
 
-	int num_bits = reg->num_qubits / 3; // number of bits per number.
+	unsigned int num_bits = reg->num_qubits / 3; // number of bits per number.
 	
 	// Half adder on least significant qubit
 	HalfAdder(num_bits - 1, 2 * num_bits - 1, 2 * num_bits, reg);
 
-	for (int i = 2; i <= num_bits; i++)
+	for (unsigned int i = 2; i <= num_bits; i++)
 		FullAdder(num_bits-i, 2*num_bits-i, 2*num_bits+i-2, 2*num_bits+i-1, reg);
 }
 
-int Add(unsigned int a, unsigned int b) {
+unsigned int Add(unsigned int a, unsigned int b) {
 	/*
 	Semi-classical ripple-carry adder.
 	Uses only Controlled-NOT and Toffoli (CC-NOT) gates to compute the sum.
@@ -224,23 +184,23 @@ int Add(unsigned int a, unsigned int b) {
 		are used to aid in the computation that occurs in the Add(register)
 		function above.
 	*/
-	int num_bits = int(log2(max(a, b))) + 1; // num of bits per number.
+	unsigned int num_bits = (unsigned int)(log2(max(a, b))) + 1; // num of bits per number.
 
 	Register reg(num_bits * 3);
 
 	// Set up the first section of qubits for the integer a
 	// and the second section of qubits for the integer b.
 
-	int ta, tb;
-	for (int i = 1; i <= num_bits; i++) {
+	unsigned int ta, tb;
+	for (unsigned int i = 1; i <= num_bits; i++) {
 
 		// Get binary one or zero for this digit of a.
 		if (pow(2, num_bits - i) > a) ta = 0;
-		else {ta = 1; a = a % int(pow(2, num_bits - i));}
+		else {ta = 1; a = a % (unsigned int)(pow(2, num_bits - i));}
 
 		// Get binary one or zero for this digit of b.
 		if (pow(2, num_bits - i) > b) tb = 0;
-		else { tb = 1; b = b % int(pow(2, num_bits - i)); }
+		else { tb = 1; b = b % (unsigned int)(pow(2, num_bits - i)); }
 
 		// Set them up in the register.
 		if (ta) reg.PauliX(i-1);
@@ -256,52 +216,65 @@ int Add(unsigned int a, unsigned int b) {
 	return binary_to_base10(s.substr(3 * num_bits - 1, 1) + s.substr(num_bits, num_bits));
 }
 
-void ModAdd(Register *reg) { // DOESN'T WORK. THE QFT AND IQFT ARE CORRECT.
-	// https://arxiv.org/pdf/quant-ph/0008033.pdf
-	// must be an even number of bits
+// MODULAR ADDITION USING QFT AND IQFT
 
-	int n = reg->num_qubits / 2;
+void ModAdd(Register *reg) {
+	/*
+	For each state in the register, transforms a state
+		|x, y>
+	into the state
+		|(x+y) mod pow(2, reg->num_bits), z>
+	where we don't care about z.
 
-	QFT(reg, 0, n);
-	
-	int phase;
-	
-	for (int i = n - 1; i >= 0; i--) { // targets are qubit i
-		phase = 0;
-		for (int j = n + i; j >= n; j--) { // controls are j
-			reg->ControlledPhaseShift(j, i, pi/pow(2, phase));
-			phase++;
+	x and y must be represented by the same number of bits, so
+	reg must have an even number of bits.
+	*/
+
+	unsigned int n = reg->num_qubits / 2;
+
+	QFT(reg, 0, n); // Apply to just the bits representing x.
+
+	// Bits representing y act as controls.
+	int power;
+	for (unsigned int control = n; control < reg->num_qubits; control++) {
+		power = control - n;
+		for (int target = int(n) - 1; target >= int(2 * n - control) - 1; target--) {
+			reg->ControlledPhaseShift(control, (unsigned int)target, pi / pow(2.0, power));
+			power--;
 		}
 	}
 
-	IQFT(reg, 0, n);
+	IQFT(reg, 0, n); // Apply to just the bits representing x.
 }
 
-int ModAdd(unsigned int a, unsigned int b, unsigned int num_bits) {
-	// compute a + b mod pow(2, num_bits)
-	// num_bits is per number.
+unsigned int ModAdd(unsigned int a, unsigned int b, unsigned int num_bits) {
+	/*
+	Compute (a + b) mod pow(2, num_bits) where num_bits is per number.
+	We set up a Register to be in the state |a b>
+	where a is reprented in binary with num_bits and likewise
+	for b. The result is stored on the bits the represent a.
+	*/
 
-	if (num_bits < int(log2(max(a, b))) + 1) {
-		printf("Not enough bits to compute %d + %d mod %d\n", int(a), int(b), (int)pow(2, num_bits)); 
+	if (num_bits < (unsigned int)(log2(max(a, b))) + 1) {
+		printf("Not enough bits to compute %d + %d mod %d\n", a, b, pow(2, num_bits)); 
 		return 0;
 	}
-
 
 	Register reg(num_bits * 2);
 
 	// Set up the first section of qubits for the integer a
 	// and the second section of qubits for the integer b.
 
-	int ta, tb;
-	for (int i = 1; i <= num_bits; i++) {
+	unsigned int ta, tb;
+	for (unsigned int i = 1; i <= num_bits; i++) {
 
 		// Get binary one or zero for this digit of a.
 		if (pow(2, num_bits - i) > a) ta = 0;
-		else { ta = 1; a = a % int(pow(2, num_bits - i)); }
+		else { ta = 1; a = a % (unsigned int)(pow(2, num_bits - i)); }
 
 		// Get binary one or zero for this digit of b.
 		if (pow(2, num_bits - i) > b) tb = 0;
-		else { tb = 1; b = b % int(pow(2, num_bits - i)); }
+		else { tb = 1; b = b % (unsigned int)(pow(2, num_bits - i)); }
 
 		// Set them up in the register.
 		if (ta) reg.PauliX(i - 1);
@@ -310,7 +283,7 @@ int ModAdd(unsigned int a, unsigned int b, unsigned int num_bits) {
 
 	ModAdd(&reg);
 
-	// reg.print_states();
+	// reg will now be in a single state.
 
 	string s = reg.measure();
 
@@ -319,7 +292,7 @@ int ModAdd(unsigned int a, unsigned int b, unsigned int num_bits) {
 
 // GROVER'S SEARCH
 
-int Grover(unsigned int omega, unsigned int num_bits, bool verbose) {
+unsigned int Grover(unsigned int omega, unsigned int num_bits, bool verbose) {
 	/*
 	Perform a Grover search to find what omega is given the black box
 	operator Uomega. Of course, here we know omega and make Uomega from
@@ -367,7 +340,7 @@ int Grover(unsigned int omega, unsigned int num_bits, bool verbose) {
 
 		// Apply the Grover diffusion operator.
 		/*
-		Instead of r.apply_gate(D, v), could do the following
+		Instead of r.apply_gate(D, v), could do the following, which is more physically realistic I think.
 
 		for (int i = 0; i < r.num_qubits; i++) r.Hadamard(i);
 		r.apply_gate(Us, v);

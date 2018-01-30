@@ -15,15 +15,15 @@ class Register {
 		bool check_state(string state);
 
 	public:
-		int num_qubits;
-		static vec_states all_states(int n);
-		Register(int num_qubits);
+		unsigned int num_qubits;
+		static vec_states all_states(unsigned int n);
+		Register(unsigned int num_qubits);
 		// ~Register();
 		void set_nonzero_states(state_map &s);
 		amp amplitude(string state);
 		double probability(string state);
 		string measure();
-		char measure(int qubit);
+		char measure(unsigned int qubit);
 		void print_states();
 		friend std::ostream &operator<<(std::ostream &os, Register &reg);
 		static state_map copy_map(state_map &s);
@@ -31,17 +31,17 @@ class Register {
 		// Gates
 		void apply_gate(Unitary u, vec_int qubits);
 
-		void Hadamard(int qubit);
-		void PhaseShift(int qubit, double theta);
-		void PiOverEight(int qubit);
-		void PauliX(int qubit);
-		void PauliY(int qubit);
-		void PauliZ(int qubit);
-		void ControlledNot(int control_qubit, int target_qubit);
-		void Toffoli(int control_qubit1, int control_qubit2, int target_qubit);
-		void ControlledPhaseShift(int control_qubit, int target_qubit, double theta);
-		void Swap(int qubit1, int qubit2);
-		void Ising(int qubit1, int qubit2, double theta);
+		void Hadamard(unsigned int qubit);
+		void PhaseShift(unsigned int qubit, double theta);
+		void PiOverEight(unsigned int qubit);
+		void PauliX(unsigned int qubit);
+		void PauliY(unsigned int qubit);
+		void PauliZ(unsigned int qubit);
+		void ControlledNot(unsigned int control_qubit, unsigned int target_qubit);
+		void Toffoli(unsigned int control_qubit1, unsigned int control_qubit2, unsigned int target_qubit);
+		void ControlledPhaseShift(unsigned int control_qubit, unsigned int target_qubit, double theta);
+		void Swap(unsigned int qubit1, unsigned int qubit2);
+		void Ising(unsigned int qubit1, unsigned int qubit2, double theta);
 };
 
 #endif

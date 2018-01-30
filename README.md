@@ -53,7 +53,7 @@ I have implemented various algorithms that apply a series of quantum logic gates
 
 See quantum.h/quantum.cpp and unitary.h/unitary.cpp. The Register class has a method to apply_gate(Unitary u, vector<int> v); this applies the gate given by u to the qubits given in v.
   
-## A few things that cause weird behavior;
+## A few things that cause weird behavior
 
 * If you get probabilities that sum to more than one, you probably applied a controlled gate with repeated qubits; i.e. apply a controlled-not gate with control and target both being the same qubit.
 * Be very careful with operations involving unsigned ints and ints. I decided to make most types in the code unsigned, but this often causes strange things to happen, and caused me many minutes of confusion. If in doubt, be very explicit; convert everything to an int when doing loops and calculations, and then convert back to unsigned int when sending values into functions.

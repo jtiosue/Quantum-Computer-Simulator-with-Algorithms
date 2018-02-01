@@ -30,15 +30,15 @@ int main() {
   // Apply a function to the states. This particular function sends |x> to |x+1 mod 16>
   // or, in terms of qubits, |0000> goes to |0001>, |0001> goes to |0010>, ...
   // |1111> goes to |0000>.
-	auto f = [](string state) {
-		string r = base10_to_binary((binary_to_base10(state) + 1) % (int)pow(2, 4));
-		while (r.size() < 4) r = "0" + r; // ensure resulting number is represented with 4 qubits
-		return r;
-	};
+  auto f = [](string state) {
+    string r = base10_to_binary((binary_to_base10(state) + 1) % (int)pow(2, 4));
+    while (r.size() < 4) r = "0" + r; // ensure resulting number is represented with 4 qubits
+    return r;
+  };
   // reg.apply_function will check to make sure that the function f represents a unitary transformation.
-	reg.apply_function(f);
+  reg.apply_function(f);
 
-	reg.print_states();
+  reg.print_states();
   
   char c = reg.measure(0); // measure just qubit 0;
   

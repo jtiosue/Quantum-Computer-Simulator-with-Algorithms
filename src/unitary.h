@@ -11,9 +11,9 @@ class Unitary {
 	public:
 		unsigned int dimension;
 		Unitary(unsigned int dimension);
-		// ~Unitary();
 		amp * operator[](unsigned int i);
 		Unitary operator*(amp x);
+		Unitary operator*(Unitary &U);
 		void print_matrix();
 		friend std::ostream &operator<<(std::ostream &os, Unitary &U);
 
@@ -31,9 +31,6 @@ class Unitary {
 		static Unitary Ising(double theta);
 		static Unitary QFT(unsigned int num_qubits);
 		static Unitary IQFT(unsigned int num_qubits);
-
-		// Matrices to be created upon initialization.
-		// const static Unitary MHadamard;
 
 };
 

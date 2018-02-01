@@ -3,23 +3,15 @@
 
 #include "quantum.h"
 
-// Useful functions
-
-unsigned int char_to_int(char c);
-
-unsigned int gcd(unsigned int a, unsigned int b);
-
-unsigned int binary_to_base10(string s);
-
-string base10_to_binary(unsigned int x);
-
-
-
-// Qalgorithms
+const double pi = acos(-1.0);
 
 void QFT(Register *reg, unsigned int start=0, unsigned int end=0);
 
 void IQFT(Register *reg, unsigned int start=0, unsigned int end=0);
+
+unsigned int find_Shor_period_quantum(unsigned int a, unsigned int N, unsigned int depth_limit=10);
+
+unsigned int Shor(unsigned int N, unsigned int depth_limit=10);
 
 void Add(Register *reg);
 

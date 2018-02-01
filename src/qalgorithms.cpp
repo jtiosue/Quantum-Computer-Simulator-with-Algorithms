@@ -1,64 +1,10 @@
 #include <cmath>
 #include <algorithm>
-#include "quantum.h"
 #include "qalgorithms.h"
 #include "rand.h"
+#include "methods.h"
 
 #include <iostream>
-
-
-const double pi = acos(-1.0);
-
-// Useful functions
-
-unsigned int char_to_int(char c) {return c - '0';}
-
-unsigned int gcd(unsigned int a, unsigned int b) {
-	// Find the greatest common divisor between a and b.
-	unsigned int t;
-	while (b != 0) { t = b; b = a % b; a = t; }
-	return a;
-}
-
-unsigned int binary_to_base10(string s) {
-	/*
-	Convert binary number to base 10 with bit shifts.
-
-	This function also does the following:
-	Find row of matrix corresponding to state
-	i.e. for 3 qubits, the unitary matrix would be 8x8.
-	The basis is, in order,
-	{|000>, |001>, |010>, |011>, |100>, |101>, |110>, |111>}
-	Thus, if we input the state "000", this function returns 0.
-	if we input the state "101", this function returns 5.
-	*/
-
-
-	/* RECURSIVE WAY
-	if (!state.length()) return 0;
-	int i = 0;
-	if (state[0] == '1') i = pow(2, state.length()) / 2;
-	return i + binary_to_base10(state.substr(1, state.length() - 1));
-	*/
-
-	// BITSHIFT WAY
-	int result = 0;
-	for (unsigned int i = 0; i < s.length(); i++) {
-		result ^= (char_to_int(s[i]) << (s.length() - i - 1));
-	}
-	return result;
-}
-
-string base10_to_binary(unsigned int x) {
-	if (x == 0) return "0";
-	string s = "";
-	while (x > 0) {
-		if (x % 2 == 0) s = "0" + s;
-		else s = "1" + s;
-		x /= 2;
-	}
-	return s;
-}
 
 // QUANTUM FOURIER TRANSFORM
 
@@ -116,11 +62,139 @@ void IQFT(Register *reg, unsigned int start, unsigned int end) {
 			// don't need to explicilty convert to unsigned int here, but might as well.
 			reg->ControlledPhaseShift((unsigned int)(j + k), (unsigned int)j, -pi / pow(2, k));
 		}
-		reg->Hadamard(j);
+		reg->Hadamard((unsigned int)j);
 	}
 	//*/
 }
 
+
+// FINDING THE PERIOD OF f(x) = a^x mod N USING THE QUANTUM ALGORITHM
+
+unsigned int find_Shor_period_quantum(unsigned int a, unsigned int N, unsigned int depth_limit) {
+	/*
+	Find the period r of the function
+		f(x) = a^x mod N
+	using the quantum algorithm
+	*/
+
+	if (depth_limit <= 0) {
+		printf("Reached maximum depth limit in period find. Returning 1.\n");
+		return 1;
+	}
+
+	unsigned int q = ceil((1 + get_rand())*double(pow(N, 2)));
+
+	unsigned int L1 = floor(log2(q)) + 1; // number of qubits in register 1
+	unsigned int L2 = floor(log2(N)) + 1; // number of qubits in register 2
+	printf("Initialized register 1 with %d qubits and register 2 with %d\n", L1, L2);
+
+
+	Register reg(L1 + L2);
+
+	// Make equal superposition in register 1.
+	for (unsigned int i = 0; i < L1; i++) reg.Hadamard(i);
+	// Could have also just QFTed the first L1 qubits. Has same effect.
+
+
+	auto f = [a, N, L1, L2](string s) {
+		/*
+		Given a state of the two registers |x>|0>, this function
+		will make it |x>|a^x mod N>. The first register has L1 
+		qubits, the second has L2 qubits.
+		*/
+		string t = s.substr(0, L1);
+		unsigned int x = binary_to_base10(t);
+		// use my defined mod_power function so that we don't overflow
+		string res = base10_to_binary(mod_power(a, x, N));
+		while (res.size() < L2) res = "0" + res;
+		return t + res;
+	};
+	// This entangles the registers. Sends |x> to |f(x)>.
+	// In our case, we define f so that this sends |x, y> to |x, f(x)>
+	reg.apply_function(f);
+
+	// Don't technically need to measure yet, I don't think.
+	// Could just wait until the end, but this reduces the number
+	// of states, and so the QFT will perform faster (on the computer,
+	// in real life, I don't think this affects the speed).
+	for (unsigned int i = L1; i < L1 + L2; i++) reg.measure(i); // measure register 2.
+
+	// Quantum fourier transform the first register.
+	QFT(&reg, 0, L1);
+
+	// m will be an integer multiple of q / r with high prbability
+	// where r is the period.
+	unsigned int m = binary_to_base10(reg.measure().substr(0, L1)); // Measurement of register 1.
+
+	if (m == 0) {
+		printf("Quantum period find failed; trying again\n");
+		return find_Shor_period_quantum(a, N, depth_limit - 1);
+	}
+
+	// with high probability, m = lambda * q / r for some
+	// integer lambda where r is the period. Find the period.
+	// Maybe replace this with continuous fractions in the future.
+	unsigned int lambda = 1; unsigned int r = 1; unsigned int temp;
+	while(mod_power(a, r, N) != 1) { // might overflow if we said a^r % N
+		temp = floor(double(lambda) * double(q) / double(m));
+		// r should be even
+		if (temp && temp % 2 == 0) r = temp;
+		else r = temp + 1;
+
+		lambda++;
+		if (r >= N) {
+			printf("Quantum period find failed; trying again\n");
+			return find_Shor_period_quantum(a, N, depth_limit - 1);
+		}
+	}
+
+	printf("Quantum period find found the period of %d^x mod %d to be %d\n", a, N, r);
+	return r;
+}
+
+// FACTORIZTION
+
+unsigned int Shor(unsigned int N, unsigned int depth_limit) { 
+	/*
+	Find a single factor of N. N must not be an integer
+	power of a prime. See the notes for an explaination of
+	how Shor's algorithm works. The quantum computation only
+	occurs in the find_period function.
+
+	depth_limit is set by default in header. This limits the recursive depth.
+
+	set_srand() must be called before using this function.
+	*/
+	if (depth_limit <= 0) {
+		printf("Reached maximum depth limit in Shor. Try again, or increase depth limit\n");
+		return 1;
+	}
+
+	if (N % 2 == 0) return 2;
+	unsigned int a = (unsigned int)(floor(get_rand()*(N-1)+1)); unsigned int g = gcd(a, N);
+	if (g != 1 && g != N) {
+		printf("Completed Shor's algorithm classically. Found a factor of %d to be %d\n", N, g); 
+		return g;
+	} 
+
+	printf("Using quantum period finding algorithm to find the period of %d ^ x mod %d\n", a, N);
+	unsigned int r = find_Shor_period_quantum(a, N); unsigned int n = pow(a, r / 2);
+	// if (r % 2 == 1 || n % N == N-1) return Shor(N, depth_limit-1); // start over
+
+	unsigned int res = gcd(n - 1, N);
+	if (res != 1 && res != N) {
+		printf("Shor found a factor of %d to be %d\n", N, res);
+		return res;
+	}
+	res = gcd(n + 1, N);
+	if (res != 1 && res != N) {
+		printf("Shor found a factor of %d to be %d\n", N, res);
+		return res;
+	}
+
+	printf("Shor did not find a factor; trying again\n");
+	return Shor(N, depth_limit - 1);
+}
 
 // RIPPLE CARRY ADDITION
 

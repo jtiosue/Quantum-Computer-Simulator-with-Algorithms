@@ -8,16 +8,14 @@ Unitary::Unitary(unsigned int dimension) {
 
 	matrix = new amp *[dimension];
 	for (unsigned int i = 0; i < dimension; i++) matrix[i] = new amp[dimension];
-}
-
-/*
-Unitary::~Unitary() {
-	for (int r = 0; r < dimension; r++) {
-		delete[] matrix[r];
+	/* Compilers already default initialize to zero.
+	for (unsigned int i = 0; i < dimension; i++) {
+		for (unsigned int j = 0; j < dimension; j++) {
+			matrix[i][j] = 0.0;
+		}
 	}
-	delete[] matrix;
+	*/
 }
-*/
 
 amp *Unitary::operator[](unsigned int i) {
 	return matrix[i];
@@ -38,6 +36,22 @@ Unitary operator*(amp x, Unitary &U) {
 	return U * x;
 }
 
+Unitary Unitary::operator*(Unitary &U) {
+	Unitary f(dimension);
+	if (U.dimension != dimension) {
+		printf("Matrices cannot be multiplied; different dimensions\n");
+		return f;
+	}
+	for (unsigned int row = 0; row < dimension; row++) {
+		for (unsigned int column = 0; column < dimension; column++) {
+			for (unsigned int t = 0; t < dimension; t++) {
+				f[row][column] += matrix[row][t] * U[t][column];
+			}
+		}
+	}
+	return f;
+}
+
 std::ostream &operator<<(std::ostream &os, Unitary &U) {
 	// Show all nonzero states
 	for (int r = 0; r < U.dimension; r++) {
@@ -50,7 +64,7 @@ std::ostream &operator<<(std::ostream &os, Unitary &U) {
 }
 
 void Unitary::print_matrix() {
-	std::cout << *this << std::endl;
+	std::cout << *this;
 }
 
 Unitary Unitary::Identity(unsigned int dimension) {

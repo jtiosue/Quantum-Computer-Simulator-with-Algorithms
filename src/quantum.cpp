@@ -2,9 +2,8 @@
 #include "quantum.h"
 #include "rand.h"
 #include "qalgorithms.h"
+#include "methods.h"
 #include <iostream>
-
-using namespace std;
 
 // Register class
 
@@ -19,12 +18,6 @@ Register::Register(unsigned int num_qubits) {
 	this->num_qubits = num_qubits;
 	states[string(num_qubits, '0')] = amp(1, 0); // total prob 1;
 }
-
-/*
-Register::~Register() {
-	delete &states;
-}
-*/
 
 vec_states Register::all_states(unsigned int n) {
 	/* 
@@ -135,8 +128,8 @@ std::ostream &operator<<(std::ostream &os, Register &reg) {
 	// Show all nonzero states
 	for (state_map::iterator i = reg.states.begin(); i != reg.states.end(); ++i)
 		os << "|" << i->first << ">: amp-> "
-			<< (i->second).real() << " + " << (i->second).imag() << "i"
-			<< ", prob-> " << reg.probability(i->first) << endl;;
+		   << (i->second).real() << " + " << (i->second).imag() << "i"
+		   << ", prob-> " << reg.probability(i->first) << "\n";
 	return os;
 }
 
@@ -144,6 +137,45 @@ state_map Register::copy_map(state_map &s) {
 	state_map m;
 	for (state_map::iterator i = s.begin(); i != s.end(); ++i) { m[i->first] = i->second; }
 	return m;
+}
+
+vec_states Register::nonzero_states() {
+	/*
+	Returns all the keys in the states map; so only
+	states with nonzero amplitude.
+
+	This function is primarily here to be used with the function
+	below (operator[]). I HEAVILY RECOMMEND NOT USING THIS OR
+	THAT FUNCTION. See below for why.
+	*/
+	vec_states v;
+	for (state_map::iterator i = states.begin(); i != states.end(); ++i)
+		v.push_back(i->first);
+	return v;
+}
+
+amp & Register::operator[](string state) {
+	/*
+	Gives public access to the private states map. We return a reference,
+	so that one can change the states dictionary from outside the class.
+	THERE ARE NO CHECKS ON THIS FUNCTION. Anything you change, YOU must
+	make sure that it acts as a unitary transformation, otherwise probabilites
+	will fail, and then you can have issues with the measure function.
+
+	I HEAVILY RECOMMEND NOT USING THIS FUNCTIONALITY. I make the states
+	map private because you should really only be using quantum gates
+	(unitary transformations) to affect the register, and should not be
+	directly accessing the states. With that being said, I include this
+	function as a last option.
+
+	Use: 
+		Register reg(4);
+		cout << reg["0000"] << endl;
+		reg["0000"] = 1 / sqrt(2);
+		reg["1000"] = 1 / sqrt(2);
+		cout << reg << endl;
+	*/
+	return states[state];
 }
 
 
@@ -189,7 +221,8 @@ void Register::apply_gate(Unitary u, vec_int qubits) {
 
 		r = binary_to_base10(s); // Find which number basis element s corresponds to.
 		states[state] -= (1.0 - u[r][r]) * old[state];
-		if (states[state] == 0.0) states.erase(state); // Get rid of it.
+		// if (states[state] == 0.0) states.erase(state); // Get rid of it.
+		if (probability(state) < 1e-16) states.erase(state); // zero beyond machine precision.
 
 		j = 0;
 		for(string k : temp_states) {
@@ -198,8 +231,9 @@ void Register::apply_gate(Unitary u, vec_int qubits) {
 				for (int l = 0; l < k.size(); l++) s[qubits[l]] = k[l];
 				c = u[j][r] * old[state];
 				if (check_state(s)) {
-					if (states[s] + c == 0.0) states.erase(s);
-					else states[s] += c;
+					states[s] += c;
+					// if (states[s] == 0.0) states.erase(s);
+					if (probability(s) < 1e-16) states.erase(s); // zero beyond machine precision.
 				} else if(c != 0.0) states[s] = c;
 			}
 			j++;
@@ -315,4 +349,32 @@ void Register::Swap(unsigned int qubit1, unsigned int qubit2) {
 void Register::Ising(unsigned int qubit1, unsigned int qubit2, double theta) {
 	vec_int v; v.push_back(qubit1); v.push_back(qubit2);
 	apply_gate(Unitary::Ising(theta), v);
+}
+
+
+// Sort of a gate
+void Register::apply_function(function<string(string)> f) {
+	/*
+	Unitary transformation that sends 
+		|x> to |f(x)>
+
+	This one is not technically a gate in the code, but in real life would be
+	a unitary transformation that could be implemented with a quantum circuit.
+
+	Note that in order for this to be unitary, f(x) must map each x to a unique
+	f(x). ie. f(x) cannot equal f(y) unless x = y. This is checked in this function.
+	*/
+	
+	state_map old = copy_map(states); string state; states = state_map();
+	for (state_map::iterator i = old.begin(); i != old.end(); ++i) {
+		state = f(i->first);
+
+		if (check_state(state)) {
+			printf("The provided function does not constitute a unitary transformation.\n");
+			states = old; return; // reset.
+		}
+
+		states[state] = i->second;
+	}
+	
 }

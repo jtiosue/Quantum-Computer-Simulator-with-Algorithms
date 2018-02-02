@@ -16,7 +16,6 @@ I have implemented various algorithms that apply a series of quantum logic gates
 #include <iostream>
 
 int main() {
-  set_srand(); // Always need this at the start.
   
   Register reg(4); // initialize register with 4 qubits
   for(int i=0; i<4; i++) reg.Hadamard(i); // apply Hadamard gate to each qubit

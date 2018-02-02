@@ -241,7 +241,7 @@ void _test_Shor_factorization() {
 	cout << "\t" << "a Shor factor of " << a << " is " << Shor(a) << endl;
 	cout << endl;
 
-	a = 33; cout << "\tLooking for factor of " << a << endl;
+	a = 2813; cout << "\tLooking for factor of " << a << endl;
 	cout << "\t" << "a Shor factor of " << a << " is " << Shor(a) << endl;
 	cout << endl;
 

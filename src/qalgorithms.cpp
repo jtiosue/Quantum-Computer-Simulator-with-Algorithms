@@ -205,12 +205,14 @@ unsigned int Shor(unsigned int N, unsigned int depth_limit) {
 	unsigned int a = (unsigned int)(floor(get_rand()*(N-1)+1)); if (a == 1) a++; 
 	unsigned int g = gcd(a, N);
 	if (g != 1 && g != N) {
-		printf("Completed Shor's algorithm classically. Found a factor of %d to be %d\n", N, g); 
-		return g;
+		printf("Completed Shor's algorithm classically. Found a factor of %d to be %d\n", N, g);
+		printf("But we want to solve it quantumly! So starting over...");
+		// return g;
+		return Shor(N, depth_limit);
 	} 
 
 	// printf("Using quantum period finding algorithm to find the period of %d ^ x mod %d\n", a, N);
-	unsigned int r = find_Shor_period(a, N); unsigned int n = pow(a, r / 2);
+	unsigned int r = find_Shor_period(a, N); unsigned int n = mod_power(a, r / 2, N);
 	// if (r % 2 == 1 || n % N == N-1) return Shor(N, depth_limit-1); // start over
 
 	unsigned int res = gcd(n - 1, N);

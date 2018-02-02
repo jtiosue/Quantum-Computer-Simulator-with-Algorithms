@@ -9,9 +9,9 @@ void QFT(Register *reg, unsigned int start=0, unsigned int end=0);
 
 void IQFT(Register *reg, unsigned int start=0, unsigned int end=0);
 
-unsigned int find_Shor_period_quantum(unsigned int a, unsigned int N, unsigned int depth_limit=10);
+unsigned int find_Shor_period(unsigned int a, unsigned int N, unsigned int depth_limit=20);
 
-unsigned int Shor(unsigned int N, unsigned int depth_limit=10);
+unsigned int Shor(unsigned int N, unsigned int depth_limit=20);
 
 void Add(Register *reg);
 

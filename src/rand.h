@@ -1,7 +1,6 @@
 #ifndef RAND_INCLUDE
 #define RAND_INCLUDE
 
-void set_srand();
-double get_rand();
+double get_rand(); // double between 0.0 and 1.0.
 
 #endif

@@ -32,6 +32,9 @@ class Unitary {
 		static Unitary QFT(unsigned int num_qubits);
 		static Unitary IQFT(unsigned int num_qubits);
 
+		// Matrices to be created upon initialization.
+		// const static Unitary MHadamard;
+
 };
 
 // For left multiplication.

@@ -3,6 +3,13 @@
 
 using namespace std;
 
+void _test_random() {
+	cout << "\tTesting random generator..." << endl;
+	for (unsigned int _ = 0; _ < 10; _++)
+		cout << "\t\t" << get_rand() << endl;
+	cout << "Finished testing random\n" << endl;
+}
+
 void _test_unitary() {
 	cout << "Testing unitary...\n" << endl; cout << endl;
 	Unitary *u;
@@ -24,86 +31,8 @@ void _test_unitary() {
 	*u = 3.0 * (*u);
 	cout << *u << endl;
 	cout << endl;
-}
 
-void _test_quantum_add() {
-	cout << "Testing ripple carry quantum addition..." << endl; cout << endl;
-	unsigned int a, b;
-
-	a = 7; b = 25;
-	cout << "\t" << a << "+" << b << " = " << a + b << ", Quantum add give: " << Add(a, b) << endl;
-	cout << endl;
-
-	a = 543; b = 7;
-	cout << "\t" << a << "+" << b << " = " << a + b << ", Quantum add give: " << Add(a, b) << endl;
-	cout << endl;
-
-	a = 457; b = 323;
-	cout << "\t" << a << "+" << b << " = " << a + b << ", Quantum add give: " << Add(a, b) << endl;
-	cout << endl;
-
-	cout << "Testing quantum fourier transform modular addition..." << endl; cout << endl;
-	unsigned int N, n;
-
-	a = 6; b = 8; n = 4; N = pow(2, n);
-	cout << "\t" << a << "+" << b << " mod " << N << " = " << (a + b) % N << ", Quantum mod add gave: " << ModAdd(a, b, n) << endl;
-	cout << endl;
-
-	a = 50; b = 101; n = 7; N = pow(2, n);
-	cout << "\t" << a << "+" << b << " mod " << N << " = " << (a + b) % N << ", Quantum mod add gave: " << ModAdd(a, b, n) << endl;
-	cout << endl;
-
-	a = 5; b = 3; n = 7; N = pow(2, n);
-	cout << "\t" << a << "+" << b << " mod " << N << " = " << (a + b) % N << ", Quantum mod add gave: " << ModAdd(a, b, n) << endl;
-	cout << endl;
-
-	a = 5; b = 3; n = 3; N = pow(2, n);
-	cout << "\t" << a << "+" << b << " mod " << N << " = " << (a + b) % N << ", Quantum mod add gave: " << ModAdd(a, b, n) << endl;
-	cout << endl;
-}
-
-void _test_period_find() {
-	cout << "Testing qantum period finding..." << endl;
-	unsigned int a, N, r;
-
-	N = 15; a = 7; 
-	cout << "\tLooking for period of " << a << "^x mod " << N << endl;
-	r = find_Shor_period_quantum(a, N);
-	cout << "\ta = " << a << ", N = " << N << ", quantum result: " << r
-		 << ", gives " << a << "^" << r << " = " << mod_power(a, r, N) << " mod " << N << endl;
-	cout << endl;
-
-	N = 25; a = 3; 
-	cout << "\tLooking for period of " << a << "^x mod " << N << endl;
-	r = find_Shor_period_quantum(a, N);
-	cout << "\ta = " << a << ", N = " << N << ", quantum result: " << r
-		 << ", gives " << a << "^" << r << " = " << mod_power(a, r, N) << " mod " << N << endl;
-	cout << endl;
-
-	N = 39; a = 11; 
-	cout << "\tLooking for period of " << a << "^x mod " << N << endl;
-	r = find_Shor_period_quantum(a, N);
-	cout << "\ta = " << a << ", N = " << N << ", quantum result: " << r
-		 << ", gives " << a << "^" << r << " = " << mod_power(a, r, N) << " mod " << N << endl;
-	cout << endl;
-}
-
-void _test_Shor_factorization() {
-	cout << "Testing quantum factorization: Shor's algorithm..." << endl;
-	cout << endl;
-	int a;
-
-	a = 15; cout << "\tLooking for factor of " << a << endl;
-	cout << "\t" << "a Shor factor of " << a << " is " << Shor(a) << endl;
-	cout << endl;
-
-	a = 21; cout << "\tLooking for factor of " << a << endl;
-	cout << "\t" << "a Shor factor of " << a << " is " << Shor(a) << endl;
-	cout << endl;
-
-	a = 33; cout << "\tLooking for factor of " << a << endl;
-	cout << "\t" << "a Shor factor of " << a << " is " << Shor(a) << endl;
-	cout << endl;
+	cout << "Finished testing unitary\n" << endl;
 }
 
 void _test_collapse() {
@@ -152,23 +81,8 @@ void _test_collapse() {
 	cout << "\nMeasure 2nd qubit, got " << r->measure(2) << "\n" << endl;
 	r->print_states();
 	cout << endl;
-}
 
-void _test_Grover() {
-	cout << "Testing Grover search algorithm..." << endl; cout << endl;
-	int omega; int num_bits; int N; int result;
-
-	num_bits = 3; N = pow(2, num_bits); omega = int(get_rand()*N); result = Grover(omega, num_bits);
-	cout << "\t" << "want " << omega << ", got " << result << "\n" << endl; cout << endl;
-
-	num_bits = 4; N = pow(2, num_bits); omega = int(get_rand()*N); result = Grover(omega, num_bits);
-	cout << "\t" << "want " << omega << ", got " << result << "\n" << endl; cout << endl;
-
-	num_bits = 5; N = pow(2, num_bits); omega = int(get_rand()*N); result = Grover(omega, num_bits);
-	cout << "\t" << "want " << omega << ", got " << result << "\n" << endl; cout << endl;
-
-	num_bits = 6; N = pow(2, num_bits); omega = int(get_rand()*N); result = Grover(omega, num_bits, false);
-	cout << "\t" << "want " << omega << ", got " << result << "\n" << endl; cout << endl;
+	cout << "Finished testing register collapse\n" << endl;
 }
 
 void _test_QFT() {
@@ -225,19 +139,126 @@ void _test_QFT() {
 	IQFT(r, 1, 3);
 	cout << *r << endl;
 	cout << endl;
+
+	cout << "Finished testing QFT and IQFT\n" << endl;
 }
 
+void _test_quantum_add() {
+	cout << "Testing ripple carry quantum addition..." << endl; cout << endl;
+	unsigned int a, b;
+
+	a = 7; b = 25;
+	cout << "\t" << a << "+" << b << " = " << a + b << ", Quantum add gave: " << Add(a, b) << endl;
+	cout << endl;
+
+	a = 543; b = 7;
+	cout << "\t" << a << "+" << b << " = " << a + b << ", Quantum add gave: " << Add(a, b) << endl;
+	cout << endl;
+
+	a = 457; b = 323;
+	cout << "\t" << a << "+" << b << " = " << a + b << ", Quantum add gave: " << Add(a, b) << endl;
+	cout << endl;
+
+	cout << "Testing quantum fourier transform modular addition..." << endl; cout << endl;
+	unsigned int N, n;
+
+	a = 6; b = 8; n = 4; N = pow(2, n);
+	cout << "\t" << a << "+" << b << " mod " << N << " = " << (a + b) % N << ", Quantum mod add gave: " << ModAdd(a, b, n) << endl;
+	cout << endl;
+
+	a = 50; b = 101; n = 7; N = pow(2, n);
+	cout << "\t" << a << "+" << b << " mod " << N << " = " << (a + b) % N << ", Quantum mod add gave: " << ModAdd(a, b, n) << endl;
+	cout << endl;
+
+	a = 5; b = 3; n = 7; N = pow(2, n);
+	cout << "\t" << a << "+" << b << " mod " << N << " = " << (a + b) % N << ", Quantum mod add gave: " << ModAdd(a, b, n) << endl;
+	cout << endl;
+
+	a = 5; b = 3; n = 3; N = pow(2, n);
+	cout << "\t" << a << "+" << b << " mod " << N << " = " << (a + b) % N << ", Quantum mod add gave: " << ModAdd(a, b, n) << endl;
+	cout << endl;
+
+	cout << "Finished testing quantum addition\n" << endl;
+}
+
+void _test_Grover() {
+	cout << "Testing Grover search algorithm..." << endl; cout << endl;
+	int omega; int num_bits; int N; int result;
+
+	num_bits = 3; N = pow(2, num_bits); omega = int(get_rand()*N); result = Grover(omega, num_bits);
+	cout << "\t" << "want " << omega << ", got " << result << "\n" << endl; cout << endl;
+
+	num_bits = 4; N = pow(2, num_bits); omega = int(get_rand()*N); result = Grover(omega, num_bits);
+	cout << "\t" << "want " << omega << ", got " << result << "\n" << endl; cout << endl;
+
+	num_bits = 5; N = pow(2, num_bits); omega = int(get_rand()*N); result = Grover(omega, num_bits);
+	cout << "\t" << "want " << omega << ", got " << result << "\n" << endl; cout << endl;
+
+	num_bits = 6; N = pow(2, num_bits); omega = int(get_rand()*N); result = Grover(omega, num_bits, false);
+	cout << "\t" << "want " << omega << ", got " << result << "\n" << endl; cout << endl;
+
+	cout << "Finished testing Grover\n" << endl;
+}
+
+void _test_period_find() {
+	cout << "Testing qantum period finding..." << endl;
+	unsigned int a, N, r;
+
+	N = 15; a = 7; 
+	cout << "\tLooking for period of " << a << "^x mod " << N << endl;
+	r = find_Shor_period(a, N);
+	cout << "\ta = " << a << ", N = " << N << ", quantum result: " << r
+		 << ", gives " << a << "^" << r << " = " << mod_power(a, r, N) << " mod " << N << endl;
+	cout << endl;
+
+	N = 25; a = 3; 
+	cout << "\tLooking for period of " << a << "^x mod " << N << endl;
+	r = find_Shor_period(a, N);
+	cout << "\ta = " << a << ", N = " << N << ", quantum result: " << r
+		 << ", gives " << a << "^" << r << " = " << mod_power(a, r, N) << " mod " << N << endl;
+	cout << endl;
+
+	N = 39; a = 11; 
+	cout << "\tLooking for period of " << a << "^x mod " << N << endl;
+	r = find_Shor_period(a, N);
+	cout << "\ta = " << a << ", N = " << N << ", quantum result: " << r
+		 << ", gives " << a << "^" << r << " = " << mod_power(a, r, N) << " mod " << N << endl;
+	cout << endl;
+
+	cout << "Finished testing quantum period find\n" << endl;
+}
+
+void _test_Shor_factorization() {
+	cout << "Testing quantum factorization: Shor's algorithm..." << endl;
+	cout << endl;
+	int a;
+
+	a = 15; cout << "\tLooking for factor of " << a << endl;
+	cout << "\t" << "a Shor factor of " << a << " is " << Shor(a) << endl;
+	cout << endl;
+
+	a = 21; cout << "\tLooking for factor of " << a << endl;
+	cout << "\t" << "a Shor factor of " << a << " is " << Shor(a) << endl;
+	cout << endl;
+
+	a = 33; cout << "\tLooking for factor of " << a << endl;
+	cout << "\t" << "a Shor factor of " << a << " is " << Shor(a) << endl;
+	cout << endl;
+
+	cout << "Finished testing Shor factorization\n" << endl;
+}
+
+
 int main() {
-	set_srand(); // Always need this at the start. Intializes random.
 
-
+	// _test_random();
 	// _test_unitary();
+	// _test_collapse();
 	// _test_QFT();
 	// _test_quantum_add();
+	// _test_Grover();
 	// _test_period_find();
 	// _test_Shor_factorization();
-	// _test_collapse();
-	// _test_Grover();
 
 	return 0;
 }

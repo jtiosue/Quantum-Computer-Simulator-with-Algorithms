@@ -8,7 +8,7 @@ Unitary::Unitary(unsigned int dimension) {
 
 	matrix = new amp *[dimension];
 	for (unsigned int i = 0; i < dimension; i++) matrix[i] = new amp[dimension];
-	/* Compilers already default initialize to zero.
+	/*
 	for (unsigned int i = 0; i < dimension; i++) {
 		for (unsigned int j = 0; j < dimension; j++) {
 			matrix[i][j] = 0.0;

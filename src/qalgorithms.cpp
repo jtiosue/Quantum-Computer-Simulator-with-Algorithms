@@ -362,7 +362,7 @@ unsigned int ModAdd(unsigned int a, unsigned int b, unsigned int num_bits) {
 	*/
 
 	if (num_bits < (unsigned int)(log2(max(a, b))) + 1) {
-		printf("Not enough bits to compute %d + %d mod %d\n", a, b, pow(2, num_bits)); 
+		printf("Not enough bits to compute %d + %d mod %d\n", a, b, (int)pow(2, num_bits)); 
 		return 0;
 	}
 

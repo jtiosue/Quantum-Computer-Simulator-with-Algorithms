@@ -251,14 +251,14 @@ void _test_Shor_factorization() {
 
 int main() {
 
-	// _test_random();
-	// _test_unitary();
-	// _test_collapse();
-	// _test_QFT();
-	// _test_quantum_add();
-	// _test_Grover();
-	// _test_period_find();
-	// _test_Shor_factorization();
+	_test_random();
+	_test_unitary();
+	_test_collapse();
+	_test_QFT();
+	_test_quantum_add();
+	_test_Grover();
+	_test_period_find();
+	_test_Shor_factorization();
 
 	return 0;
 }

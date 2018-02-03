@@ -125,7 +125,7 @@ Unitary Unitary::ControlledNot() {
 
 Unitary Unitary::Toffoli() {
 	Unitary u(8);
-	for (int i = 0; i < 6; i++) u[i][i] = 1;
+	for (unsigned int i = 0; i < 6; i++) u[i][i] = 1;
 	u[6][7] = 1; u[7][6] = 1;
 	return u;
 }
@@ -149,7 +149,7 @@ Unitary Unitary::Swap() {
 
 Unitary Unitary::Ising(double theta) {
 	Unitary u(4); amp s = 1.0 / sqrt(2);
-	for (int i = 0; i < 4; i++) u[i][i] = s;
+	for (unsigned int i = 0; i < 4; i++) u[i][i] = s;
 	u[1][2] = s * amp(0, -1); u[2][1] = s * amp(0, -1);
 	// acos(-1) is pi.
 	u[0][3] = s * exp(amp(0, 1)*(theta - acos(-1.0) / 2.0));

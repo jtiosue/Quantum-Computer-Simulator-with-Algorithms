@@ -9,7 +9,7 @@
 
 I have implemented various algorithms that apply a series of quantum logic gates to a register in order to achieve some goal. There is quantum ripple carry addition, quantum modular arithitic using the quantum and inverse quantum Fourier transforms, Grover's search algorithm, and Shor's factorization algorithm with quantum period finding. See qalgorithms.cpp.
 
-I am able to simulate many qubits fairly well. Finding the factors of 2813 took just five seconds (`Shor(2813)`), and 3901 (`Shor(3901)`) took under a minute on my laptop. From this, we see that simulating quantum systems on a classical computer is indeed exponentially complex.
+I am able to simulate many qubits fairly well. Finding the factors of 2813 takes on average under ten seconds (`Shor(2813)`), and 3901 (`Shor(3901)`) took under a minute on my laptop. From this, we see that simulating quantum systems on a classical computer is indeed exponentially complex.
 
 ## Example usage
 

@@ -1,7 +1,7 @@
 # Quantum-Computer-Simulator-with-Algorithms
 *C++11 simulator of quantum registers and quantum algorithms*
 
-*If you use this anywhere, please cite me and email me so I can see it too!*
+*If you use this anywhere, please cite me and email (joe.iosue@yahoo.com) me so I can see it too!*
 
 **To see explainations and proofs of the various algorithms, see explaination/math.pdf**. To see examples of how to use this code, look at src/test.cpp. To get started, compile with `g++ -std=c++11 -o test *.cpp`.
 

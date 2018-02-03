@@ -233,7 +233,7 @@ void _test_period_find() {
 void _test_Shor_factorization() {
 	cout << "Testing quantum factorization: Shor's algorithm..." << endl;
 	cout << endl;
-	int a;
+	unsigned int a;
 
 	a = 15; cout << "\tLooking for factor of " << a << endl;
 	cout << "\t" << "a Shor factor of " << a << " is " << Shor(a) << endl;

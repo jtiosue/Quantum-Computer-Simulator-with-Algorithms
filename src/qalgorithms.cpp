@@ -415,7 +415,7 @@ unsigned int Grover(unsigned int omega, unsigned int num_bits, bool verbose) {
 	set_srand() must be called before calling this function.
 	*/
 
-	int N = pow(2, num_bits);
+	int N = 1 << num_bits; // 1 << num_bits is pow(2, num_bits)
 	if (omega >= N) { printf("%d is not enough bits for omega = %d\n", num_bits, omega); return 0; }
 
 	// Make Uomega, our black box operator.

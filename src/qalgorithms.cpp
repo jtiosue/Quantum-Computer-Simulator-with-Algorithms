@@ -29,7 +29,7 @@ void QFT(Register *reg, unsigned int start, unsigned int end) {
 	for (unsigned int j = start; j < end; j++) {
 		reg->Hadamard(j);
 		for (unsigned int k = 1; k < end - j; k++) {
-			reg->ControlledPhaseShift(j + k, j, pi/pow(2, k));
+			reg->ControlledPhaseShift(j + k, j, pi/double(1 << k)); // 1 << k is pow(2, k)
 		}
 	}
 	for (unsigned int i = 0; i < floor((end-start) / 2.0); i++) reg->Swap(start+i, end-i-1);
@@ -60,7 +60,7 @@ void IQFT(Register *reg, unsigned int start, unsigned int end) {
 	for (int j = int(end) - 1; j >= int(start); j--) {
 		for (int k = int(end)-j-1; k >= 1; k--) {
 			// don't need to explicilty convert to unsigned int here, but might as well.
-			reg->ControlledPhaseShift((unsigned int)(j + k), (unsigned int)j, -pi / pow(2, k));
+			reg->ControlledPhaseShift((unsigned int)(j + k), (unsigned int)j, -pi / double(1 << k)); // 1 << k is pow(2, k)
 		}
 		reg->Hadamard((unsigned int)j);
 	}
@@ -205,16 +205,16 @@ unsigned int Shor(unsigned int N, unsigned int depth_limit) {
 	unsigned int a = (unsigned int)(floor(get_rand()*(N-1)+1)); if (a == 1) a++; 
 	unsigned int g = gcd(a, N);
 	if (g != 1 && g != N) {
-		printf("Completed Shor's algorithm classically. Found a factor of %d to be %d\n", N, g);
-		printf("But we want to solve it quantumly! So starting over...");
+		printf("Completed Shor's algorithm classically. Found a factor of %d to be %d\n", N, g); 
+        printf("But we want to solve it quantumly! So starting over...\n");
 		// return g;
-		return Shor(N, depth_limit);
+        return Shor(N, depth_limit);
 	} 
 
 	// printf("Using quantum period finding algorithm to find the period of %d ^ x mod %d\n", a, N);
 	unsigned int r = find_Shor_period(a, N); unsigned int n = mod_power(a, r / 2, N);
 	// if (r % 2 == 1 || n % N == N-1) return Shor(N, depth_limit-1); // start over
-
+    
 	unsigned int res = gcd(n - 1, N);
 	if (res != 1 && res != N) {
 		printf("Shor found a factor of %d to be %d\n", N, res);
@@ -303,12 +303,12 @@ unsigned int Add(unsigned int a, unsigned int b) {
 	for (unsigned int i = 1; i <= num_bits; i++) {
 
 		// Get binary one or zero for this digit of a.
-		if (pow(2, num_bits - i) > a) ta = 0;
-		else {ta = 1; a = a % (unsigned int)(pow(2, num_bits - i));}
+		if ((unsigned int)(1 << (num_bits - i)) > a) ta = 0; // 1 << x is pow(2, x)
+		else {ta = 1; a = a % (unsigned int)(1 << (num_bits - i));}
 
 		// Get binary one or zero for this digit of b.
-		if (pow(2, num_bits - i) > b) tb = 0;
-		else { tb = 1; b = b % (unsigned int)(pow(2, num_bits - i)); }
+		if ((unsigned int)(1 << (num_bits - i)) > b) tb = 0;
+		else { tb = 1; b = b % (unsigned int)(1 << (num_bits - i)); }
 
 		// Set them up in the register.
 		if (ta) reg.PauliX(i-1);
@@ -347,7 +347,7 @@ void ModAdd(Register *reg) {
 	for (unsigned int control = n; control < reg->num_qubits; control++) {
 		power = control - n;
 		for (int target = int(n) - 1; target >= int(2 * n - control) - 1; target--) {
-			reg->ControlledPhaseShift(control, (unsigned int)target, pi / pow(2.0, power));
+			reg->ControlledPhaseShift(control, (unsigned int)target, pi / double(1 << power)); // 1 << power is pow(2, power)
 			power--;
 		}
 	}
@@ -364,7 +364,7 @@ unsigned int ModAdd(unsigned int a, unsigned int b, unsigned int num_bits) {
 	*/
 
 	if (num_bits < (unsigned int)(log2(max(a, b))) + 1) {
-		printf("Not enough bits to compute %d + %d mod %d\n", a, b, (int)pow(2, num_bits)); 
+		printf("Not enough bits to compute %d + %d mod %d\n", a, b, (int)(1 << num_bits)); // 1 << num_bits is pow(2, num_bits)
 		return 0;
 	}
 
@@ -377,12 +377,12 @@ unsigned int ModAdd(unsigned int a, unsigned int b, unsigned int num_bits) {
 	for (unsigned int i = 1; i <= num_bits; i++) {
 
 		// Get binary one or zero for this digit of a.
-		if (pow(2, num_bits - i) > a) ta = 0;
-		else { ta = 1; a = a % (unsigned int)(pow(2, num_bits - i)); }
+		if ((unsigned int)(1 << (num_bits - i)) > a) ta = 0; // 1 << x is pow(2, x)
+		else { ta = 1; a = a % (unsigned int)(1 << (num_bits - i)); }
 
 		// Get binary one or zero for this digit of b.
-		if (pow(2, num_bits - i) > b) tb = 0;
-		else { tb = 1; b = b % (unsigned int)(pow(2, num_bits - i)); }
+		if ((unsigned int)(1 << (num_bits - i)) > b) tb = 0;
+		else { tb = 1; b = b % (unsigned int)(1 << (num_bits - i)); }
 
 		// Set them up in the register.
 		if (ta) reg.PauliX(i - 1);

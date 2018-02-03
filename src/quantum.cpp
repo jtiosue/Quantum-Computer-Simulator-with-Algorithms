@@ -208,7 +208,7 @@ void Register::apply_gate(Unitary u, vec_int qubits) {
 	but instead assume that the user uses the gates correctly.
 	*/
 
-	if (u.dimension != pow(2, qubits.size())) { 
+	if (u.dimension != 1 << qubits.size()) { // 1 << qubits.size is pow(2, qubits.size())
 		printf("Unitary matrix dimension is not correct to be applied to the inputs qubits\n");
 		return; 
 	}

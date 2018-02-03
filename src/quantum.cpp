@@ -89,7 +89,19 @@ string Register::measure() {
 		}
 	}
 
-	//return "uh oh";
+	// WE SHOULD NEVER MAKE IT OUT HERE. If you use my functions, I make sure
+    // that the total probability is always 1, so we will never make it out here.
+    // But, if you adjusted the states manually with the operator[] funcionality
+    // that I included and you did something wrong, then we may make it out here.
+    // This is why I recommend you never use the reg[] functionality, but if you do,
+    // make sure you get the physics correct so that the total probability is always
+    // one and we never make it out here. In the event that we do, just pretend like
+    // we measured |000...>.
+    s = string(num_qubits, '0');
+    states = state_map();
+    states[s] = 1.0;
+    return s;
+    
 }
 
 char Register::measure(unsigned int qubit) {
@@ -208,16 +220,16 @@ void Register::apply_gate(Unitary u, vec_int qubits) {
 	but instead assume that the user uses the gates correctly.
 	*/
 
-	if (u.dimension != 1 << qubits.size()) { // 1 << qubits.size is pow(2, qubits.size())
+	if (u.dimension != (unsigned int)(1 << qubits.size())) { // 1 << qubits.size is pow(2, qubits.size())
 		printf("Unitary matrix dimension is not correct to be applied to the inputs qubits\n");
 		return; 
 	}
 
-	string state, s; int r, j; state_map old = copy_map(states); amp c;
+	string state, s; unsigned int r, j; state_map old = copy_map(states); amp c;
 	vec_states temp_states = all_states(qubits.size());
 	for (state_map::iterator i = old.begin(); i != old.end(); ++i) {
 		state = i->first; s = "";
-		for (int q : qubits) s += state[q];
+		for (unsigned int q : qubits) s += state[q];
 
 		r = binary_to_base10(s); // Find which number basis element s corresponds to.
 		states[state] -= (1.0 - u[r][r]) * old[state];
@@ -228,7 +240,7 @@ void Register::apply_gate(Unitary u, vec_int qubits) {
 		for(string k : temp_states) {
 			if (j != r) {
 				s = state;
-				for (int l = 0; l < k.size(); l++) s[qubits[l]] = k[l];
+				for (unsigned int l = 0; l < k.size(); l++) s[qubits[l]] = k[l];
 				c = u[j][r] * old[state];
 				if (check_state(s)) {
 					states[s] += c;

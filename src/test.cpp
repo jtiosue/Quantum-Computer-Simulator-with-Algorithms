@@ -19,14 +19,16 @@ void _test_unitary() {
 	cout << *u << endl;
 
 	cout << "Check right scalar multiplication: the matrix below should be negative two times the following matrix" << endl;
-	u = new Unitary(3); for (int r = 0; r < u->dimension; r++) { for (int c = 0; c < u->dimension; c++) { (*u)[r][c] = get_rand(); } }
+	u = new Unitary(3); 
+    for (unsigned int r = 0; r < u->dimension; r++) { for (unsigned int c = 0; c < u->dimension; c++) { (*u)[r][c] = get_rand(); } }
 	cout << *u << endl;
 	*u = (*u)*(-2.0);
 	cout << *u << endl;
 	cout << endl;
 
 	cout << "Check left scalar multiplication: the matrix below should be three times the following matrix" << endl;
-	u = new Unitary(4); for (int r = 0; r < u->dimension; r++) { for (int c = 0; c < u->dimension; c++) { (*u)[r][c] = get_rand(); } }
+	u = new Unitary(4); 
+    for (unsigned int r = 0; r < u->dimension; r++) { for (unsigned int c = 0; c < u->dimension; c++) { (*u)[r][c] = get_rand(); } }
 	cout << *u << endl;
 	*u = 3.0 * (*u);
 	cout << *u << endl;
@@ -37,10 +39,10 @@ void _test_unitary() {
 
 void _test_collapse() {
 	cout << "Testing collapsing a register...\n" << endl;
-	int n;
+	unsigned int n;
 
 	n = 3; Register *r = new Register(n);
-	for (int i = 0; i < r->num_qubits; i++) {
+	for (unsigned int i = 0; i < r->num_qubits; i++) {
 		r->Hadamard(i);
 		r->PauliY(i);
 		r->PiOverEight(i);
@@ -55,7 +57,7 @@ void _test_collapse() {
 	cout << endl;
 
 	n = 2; r = new Register(n);
-	for (int i = 0; i < r->num_qubits; i++) {
+	for (unsigned int i = 0; i < r->num_qubits; i++) {
 		r->Hadamard(i);
 		r->PauliX(i);
 		r->PiOverEight(i);
@@ -69,7 +71,7 @@ void _test_collapse() {
 	cout << endl;
 
 	n = 4; r = new Register(n);
-	for (int i = 0; i < r->num_qubits - 1; i++) {
+	for (unsigned int i = 0; i < r->num_qubits - 1; i++) {
 		r->Hadamard(i);
 		r->PauliX(i);
 		r->PiOverEight(i);
@@ -185,16 +187,16 @@ void _test_Grover() {
 	cout << "Testing Grover search algorithm..." << endl; cout << endl;
 	int omega; int num_bits; int N; int result;
 
-	num_bits = 3; N = pow(2, num_bits); omega = int(get_rand()*N); result = Grover(omega, num_bits);
+	num_bits = 3; N = pow(2, num_bits); omega = (unsigned int)(get_rand()*N); result = Grover(omega, num_bits);
 	cout << "\t" << "want " << omega << ", got " << result << "\n" << endl; cout << endl;
 
-	num_bits = 4; N = pow(2, num_bits); omega = int(get_rand()*N); result = Grover(omega, num_bits);
+	num_bits = 4; N = pow(2, num_bits); omega = (unsigned int)(get_rand()*N); result = Grover(omega, num_bits);
 	cout << "\t" << "want " << omega << ", got " << result << "\n" << endl; cout << endl;
 
-	num_bits = 5; N = pow(2, num_bits); omega = int(get_rand()*N); result = Grover(omega, num_bits);
+	num_bits = 5; N = pow(2, num_bits); omega = (unsigned int)(get_rand()*N); result = Grover(omega, num_bits);
 	cout << "\t" << "want " << omega << ", got " << result << "\n" << endl; cout << endl;
 
-	num_bits = 6; N = pow(2, num_bits); omega = int(get_rand()*N); result = Grover(omega, num_bits, false);
+	num_bits = 6; N = pow(2, num_bits); omega = (unsigned int)(get_rand()*N); result = Grover(omega, num_bits, false);
 	cout << "\t" << "want " << omega << ", got " << result << "\n" << endl; cout << endl;
 
 	cout << "Finished testing Grover\n" << endl;
@@ -259,6 +261,6 @@ int main() {
 	_test_Grover();
 	_test_period_find();
 	_test_Shor_factorization();
-
+    
 	return 0;
 }

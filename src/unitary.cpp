@@ -23,8 +23,8 @@ amp *Unitary::operator[](unsigned int i) {
 
 Unitary Unitary::operator*(amp x) {
 	Unitary n(dimension);
-	for (int r = 0; r < dimension; r++) {
-		for (int c = 0; c < dimension; c++) {
+	for (unsigned int r = 0; r < dimension; r++) {
+		for (unsigned int c = 0; c < dimension; c++) {
 			n[r][c] = matrix[r][c] * x;
 		}
 	}
@@ -54,8 +54,8 @@ Unitary Unitary::operator*(Unitary &U) {
 
 std::ostream &operator<<(std::ostream &os, Unitary &U) {
 	// Show all nonzero states
-	for (int r = 0; r < U.dimension; r++) {
-		for (int c = 0; c < U.dimension; c++) {
+	for (unsigned int r = 0; r < U.dimension; r++) {
+		for (unsigned int c = 0; c < U.dimension; c++) {
 			os << U[r][c] << "\t";
 		}
 		os << "\n";
@@ -71,7 +71,7 @@ Unitary Unitary::Identity(unsigned int dimension) {
 	// Unitary is initialized to all zeros
 	// I don't think this is compiler specific.
 	Unitary u(dimension);
-	for (int i = 0; i < dimension; i++) u[i][i] = 1;
+	for (unsigned int i = 0; i < dimension; i++) u[i][i] = 1;
 	return u;
 }
 
@@ -159,11 +159,11 @@ Unitary Unitary::Ising(double theta) {
 
 Unitary Unitary::QFT(unsigned int num_qubits) {
 	// Makes the matrix that transforms the system.
-	int N = pow(2, num_qubits); Unitary u(N); 
+	unsigned int N = 1 << num_qubits; Unitary u(N); // 1 << num_qubits is pow(2, qubits)
 	amp omega = exp(2*acos(-1.)*amp(0, 1) / double(N)); // acos(-1) is pi.
 	amp c = 1 / sqrt(N);
-	for (int i = 0; i < N; i++) {
-		for (int j = 0; j < N; j++) {
+	for (unsigned int i = 0; i < N; i++) {
+		for (unsigned int j = 0; j < N; j++) {
 			u[i][j] = pow(omega, i*j) * c;
 		}
 	}
@@ -172,11 +172,11 @@ Unitary Unitary::QFT(unsigned int num_qubits) {
 
 Unitary Unitary::IQFT(unsigned int num_qubits) {
 	// Complex transpose of the QFT.
-	int N = pow(2, num_qubits); Unitary u(N);
+	unsigned int N = 1 << num_qubits; Unitary u(N);
 	amp omega = exp(2 * acos(-1.)*amp(0, -1) / double(N)); // acos(-1) is pi.
 	amp c = 1 / sqrt(N);
-	for (int i = 0; i < N; i++) {
-		for (int j = 0; j < N; j++) {
+	for (unsigned int i = 0; i < N; i++) {
+		for (unsigned int j = 0; j < N; j++) {
 			u[i][j] = pow(omega, i*j) * c;
 		}
 	}

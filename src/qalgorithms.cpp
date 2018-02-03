@@ -415,7 +415,7 @@ unsigned int Grover(unsigned int omega, unsigned int num_bits, bool verbose) {
 	set_srand() must be called before calling this function.
 	*/
 
-	int N = 1 << num_bits; // 1 << num_bits is pow(2, num_bits)
+	unsigned int N = 1 << num_bits; // 1 << num_bits is pow(2, num_bits)
 	if (omega >= N) { printf("%d is not enough bits for omega = %d\n", num_bits, omega); return 0; }
 
 	// Make Uomega, our black box operator.
@@ -424,10 +424,10 @@ unsigned int Grover(unsigned int omega, unsigned int num_bits, bool verbose) {
 	// The Grover diffusion operator, 2|s><s| - I, where |s>
 	// is equal superposition of all states.
 	Unitary D(N);
-	for (int i = 0; i < D.dimension; i++) {
-		for (int j = 0; j < D.dimension; j++) {
+	for (unsigned int i = 0; i < D.dimension; i++) {
+		for (unsigned int j = 0; j < D.dimension; j++) {
 			D[i][j] = 2.0 / double(N);
-			if (i == j) D[i][j] -= 1;
+			if (i == j) D[i][j] -= 1.0;
 		}
 	}
 
@@ -439,10 +439,10 @@ unsigned int Grover(unsigned int omega, unsigned int num_bits, bool verbose) {
 	Register r(num_bits); vec_int v;
 
 	// Begin with equal superposition.
-	for (int i = 0; i < r.num_qubits; i++) { r.Hadamard(i); v.push_back(i); }
+	for (unsigned int i = 0; i < r.num_qubits; i++) { r.Hadamard(i); v.push_back(i); }
 
 	// iterate O(sqrt(N)) times. where we stop is important!
-	for (int _ = 0; _ < round(pi / (4.0*asin(1/sqrt(N)))-1.0/2.0); _++) {
+	for (unsigned int _ = 0; _ < (unsigned int)round(pi / (4.0*asin(1/sqrt(N)))-1.0/2.0); _++) {
 		// Uomega operator is applied to the whole system
 		r.apply_gate(Uomega, v);
 

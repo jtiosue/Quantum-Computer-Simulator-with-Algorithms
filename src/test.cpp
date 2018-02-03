@@ -164,19 +164,19 @@ void _test_quantum_add() {
 	cout << "Testing quantum fourier transform modular addition..." << endl; cout << endl;
 	unsigned int N, n;
 
-	a = 6; b = 8; n = 4; N = pow(2, n);
+	a = 6; b = 8; n = 4; N = 1 << n;
 	cout << "\t" << a << "+" << b << " mod " << N << " = " << (a + b) % N << ", Quantum mod add gave: " << ModAdd(a, b, n) << endl;
 	cout << endl;
 
-	a = 50; b = 101; n = 7; N = pow(2, n);
+	a = 50; b = 101; n = 7; N = 1 << n;
 	cout << "\t" << a << "+" << b << " mod " << N << " = " << (a + b) % N << ", Quantum mod add gave: " << ModAdd(a, b, n) << endl;
 	cout << endl;
 
-	a = 5; b = 3; n = 7; N = pow(2, n);
+	a = 5; b = 3; n = 7; N = 1 << n;
 	cout << "\t" << a << "+" << b << " mod " << N << " = " << (a + b) % N << ", Quantum mod add gave: " << ModAdd(a, b, n) << endl;
 	cout << endl;
 
-	a = 5; b = 3; n = 3; N = pow(2, n);
+	a = 5; b = 3; n = 3; N = 1 << n;
 	cout << "\t" << a << "+" << b << " mod " << N << " = " << (a + b) % N << ", Quantum mod add gave: " << ModAdd(a, b, n) << endl;
 	cout << endl;
 
@@ -185,18 +185,18 @@ void _test_quantum_add() {
 
 void _test_Grover() {
 	cout << "Testing Grover search algorithm..." << endl; cout << endl;
-	int omega; int num_bits; int N; int result;
+	unsigned int omega, num_bits, N, result;
 
-	num_bits = 3; N = pow(2, num_bits); omega = (unsigned int)(get_rand()*N); result = Grover(omega, num_bits);
+	num_bits = 3; N = 1 << num_bits; omega = (unsigned int)(get_rand()*N); result = Grover(omega, num_bits);
 	cout << "\t" << "want " << omega << ", got " << result << "\n" << endl; cout << endl;
 
-	num_bits = 4; N = pow(2, num_bits); omega = (unsigned int)(get_rand()*N); result = Grover(omega, num_bits);
+	num_bits = 4; N = 1 << num_bits; omega = (unsigned int)(get_rand()*N); result = Grover(omega, num_bits);
 	cout << "\t" << "want " << omega << ", got " << result << "\n" << endl; cout << endl;
 
-	num_bits = 5; N = pow(2, num_bits); omega = (unsigned int)(get_rand()*N); result = Grover(omega, num_bits);
+	num_bits = 5; N = 1 << num_bits; omega = (unsigned int)(get_rand()*N); result = Grover(omega, num_bits);
 	cout << "\t" << "want " << omega << ", got " << result << "\n" << endl; cout << endl;
 
-	num_bits = 6; N = pow(2, num_bits); omega = (unsigned int)(get_rand()*N); result = Grover(omega, num_bits, false);
+	num_bits = 6; N = 1 << num_bits; omega = (unsigned int)(get_rand()*N); result = Grover(omega, num_bits, false);
 	cout << "\t" << "want " << omega << ", got " << result << "\n" << endl; cout << endl;
 
 	cout << "Finished testing Grover\n" << endl;

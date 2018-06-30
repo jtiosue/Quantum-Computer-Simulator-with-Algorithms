@@ -1,16 +1,11 @@
 import QuantumSimulator.register as register
 import QuantumSimulator.gates as gates
-import QuantumSimulator.algorithm as algorithm
 
 
 num_qubits = 3
 
-alg0 = algorithm.canonical_ordering(
-    ["H(1)", "CN(0, 1)", "Y(0)", "X(1)", "T(1, 0, 2)", "S(2, 1)", "Y(2)", "P(pi/2, 0)"]
-)
-alg1 = algorithm.canonical_ordering(
-    ["H(0)", "CN(2, 1)", "Z(0)", "Y(1)", "T(1, 2, 0)", "S(0, 1)", "X(2)", "CP(2.3*pi, 1, 2)"]
-)
+alg0 = ["H(1)", "CN(0, 1)", "Y(0)", "X(1)", "T(1, 0, 2)", "S(2, 1)", "Y(2)", "P(pi/2, 0)"]
+alg1 = ["H(0)", "CN(2, 1)", "Z(0)", "Y(1)", "T(1, 2, 0)", "S(0, 1)", "X(2)", "CP(2.3*pi, 1, 2)"]
 
 num_gates = len(alg0)
 assert num_gates == len(alg1), "algorithms should be the same depth"

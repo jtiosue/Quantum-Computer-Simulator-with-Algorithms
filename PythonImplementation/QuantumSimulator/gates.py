@@ -1,4 +1,10 @@
-from numpy import exp, pi, cos, sin
+import numpy as np
+
+exp, PI, cos, sin = np.exp, np.pi, np.cos, np.sin
+
+sigma_x = [[0, 1], [1, 0]]
+sigma_y = [[0, -1j], [1j, 0]]
+sigma_z = [[1, 0], [0, -1]]
 
 
 class Gate:
@@ -8,7 +14,7 @@ class Gate:
         unitary is list of list representing unitary matrix
         qubits is tuple in order of qubits that unitary acts on
         """
-        self.unitary, self.qubits = unitary, qubits
+        self.unitary, self.qubits = np.array(unitary), qubits
         self.dimension, self.num_qubits = len(unitary), len(qubits)
 
     def __getitem__(self, item):
@@ -26,170 +32,193 @@ class Gate:
         register.apply_gate(self)
         return register
 
+    def full_unitary(self, num_qubits):
+        """
+        Find the full unitary matrix of the gate on the full Hilbert space of
+        dimension 2^num_qubits. ONLY WORKS FOR SINGLE QUBIT GATES RIGHT NOW
+        """
+        unitary = np.kron(np.eye(1 << self.qubits[0]), self.unitary)
+        unitary = np.kron(unitary, np.eye(1 << (num_qubits-self.qubits[0]-1)))
+        return unitary
 
-class Hadamard(Gate):
+    def __pow__(self, power):
+        return Gate([list(x) for x in np.array(self.unitary)**power],
+                    self.qubits)
+
+    # def __mul__(self, other):
+    #     """ self * other """
+
+
+
+
+class H(Gate):
+    c = 1.0/2.0**0.5 + 0.0j
+    unitary = np.array([
+        [c, c],
+        [c, -c]
+    ])
     def __init__(self, qubit):
-        c = 1.0/2.0**0.5 + 0.0j
-        super().__init__([
-            [c, c],
-            [c, -c]
-        ], (qubit,))
+        super().__init__(H.unitary, (qubit,))
 
     def __str__(self):
         return "H(%d)" % self.qubits[0]
 
-class ControlledNot(Gate):
+class CX(Gate):
+    unitary = np.array([
+        [1.0, 0.0, 0.0, 0.0],
+        [0.0, 1.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 1.0],
+        [0.0, 0.0, 1.0, 0.0]
+    ])
     def __init__(self, control_qubit, target_qubit):
         # qubits should be tuple (control, target)
-        super().__init__([
-            [1.0, 0.0, 0.0, 0.0],
-            [0.0, 1.0, 0.0, 0.0],
-            [0.0, 0.0, 0.0, 1.0],
-            [0.0, 0.0, 1.0, 0.0]
-        ], (control_qubit, target_qubit))
+        super().__init__(CX.unitary, (control_qubit, target_qubit))
 
     def __str__(self):
-        return "CN" + str(self.qubits)
+        return "CX" + str(self.qubits)
 
-class PauliX(Gate):
+class X(Gate):
+    unitary = np.array(sigma_x)
     def __init__(self, qubit):
-        super().__init__([
-            [0.0, 1.0],
-            [1.0, 0.0],
-        ], (qubit,))
+        super().__init__(X.unitary, (qubit,))
 
     def __str__(self):
         return "X%d" % self.qubits[0]
 
-class PauliY(Gate):
+class Y(Gate):
+    unitary = np.array(sigma_y)
     def __init__(self, qubit):
-        super().__init__([
-            [0.0, -1.0j],
-            [1.0j, 0.0],
-        ], (qubit,))
+        super().__init__(Y.unitary, (qubit,))
 
     def __str__(self):
         return "Y%d" % self.qubits[0]
 
-class PauliZ(Gate):
+class Z(Gate):
+    unitary = np.array(sigma_z)
     def __init__(self, qubit):
-        super().__init__([
-            [1.0, 0.0],
-            [0.0, -1.0],
-        ], (qubit,))
+        super().__init__(Z.unitary, (qubit,))
 
     def __str__(self):
         return "Z%d" % self.qubits[0]
 
-class Tofolli(Gate):
+class T(Gate):
+    unitary = [[0.0]*8 for _ in range(8)]
+    for i in range(6): unitary[i][i] = 1.0
+    unitary[6][7] = 1.0
+    unitary[7][6] = 1.0
+    unitary = np.array(unitary)
     def __init__(self, *qubits):
         """ qubits should be a tuple of length 3 """
-        unitary = [[0.0]*8 for _ in range(8)]
-        for i in range(6): unitary[i][i] = 1.0
-        unitary[6][7] = 1.0
-        unitary[7][6] = 1.0
-        super().__init__(unitary, qubits)
+        super().__init__(T.unitary, qubits)
 
     def __str__(self):
         return "T" + str(self.qubits)
 
-class Swap(Gate):
+class S(Gate):
+    unitary = np.array([
+        [1.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 1.0, 0.0],
+        [0.0, 1.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 1.0]
+    ])
     def __init__(self, *qubits):
         """ swap two qubits. qubits should be tuple of length 2 """
-        super().__init__([
-            [1.0, 0.0, 0.0, 0.0],
-            [0.0, 0.0, 1.0, 0.0],
-            [0.0, 1.0, 0.0, 0.0],
-            [0.0, 0.0, 0.0, 1.0]
-        ], qubits)
+        super().__init__(S.unitary, qubits)
 
     def __str__(self):
         return "S" + str(self.qubits)
 
-class PhaseShift(Gate):
+class P(Gate):
     """ Phase shift P = |0><0| + exp(i theta) |1><1| """
+    unitary = lambda angle: np.array([
+        [1.0, 0.0],
+        [0.0, exp(1.0j*angle)]
+    ])
     def __init__(self, angle, qubit):
-        super().__init__([
-            [1.0, 0.0],
-            [0.0, exp(1.0j*angle)]
-        ], (qubit,))
-
+        super().__init__(P.unitary(angle), (qubit,))
         self.angle = angle
 
     def __str__(self):
         return "P" + str((self.angle,) + self.qubits)
 
-class ControlledPhaseShift(Gate):
+class CP(Gate):
+    unitary = lambda angle: np.array([
+        [1.0, 0.0, 0.0, 0.0],
+        [0.0, 1.0, 0.0, 0.0],
+        [0.0, 0.0, 1.0, 0.0],
+        [0.0, 0.0, 0.0, exp(1.0j*angle)]
+    ])
     def __init__(self, angle, control_qubit, target_qubit):
         qubits = (control_qubit, target_qubit)
-        super().__init__([
-            [1.0, 0.0, 0.0, 0.0],
-            [0.0, 1.0, 0.0, 0.0],
-            [0.0, 0.0, 1.0, 0.0],
-            [0.0, 0.0, 0.0, exp(1.0j*angle)]
-        ], qubits)
-
+        super().__init__(CP.unitary(angle), qubits)
         self.angle = angle
 
     def __str__(self):
         return "CP" + str((self.angle,) + self.qubits)
 
-class XRotation(Gate):
+class RX(Gate):
+    unitary = lambda angle: np.array([
+        [cos(angle/2), -1.0j*sin(angle/2)],
+        [-1.0j*sin(angle/2), cos(angle/2)]
+    ])
     def __init__(self, angle, qubit):
         """ rotate the qubit around the x axis by an angle """
-        super().__init__([
-            [cos(angle/2), -1.0j*sin(angle/2)],
-            [-1.0j*sin(angle/2), cos(angle/2)]
-        ], (qubit,))
-
+        super().__init__(RX.unitary(angle), (qubit,))
         self.angle = angle
 
     def __str__(self):
         return "RX" + str((self.angle,) + self.qubits)
 
-class YRotation(Gate):
+class RY(Gate):
+    unitary = lambda angle: np.array([
+        [cos(angle/2), -sin(angle/2)],
+        [sin(angle/2), cos(angle/2)]
+    ])
     def __init__(self, angle, qubit):
         """ rotate the qubit around the y axis by an angle """
-        super().__init__([
-            [cos(angle/2), -sin(angle/2)],
-            [sin(angle/2), cos(angle/2)]
-        ], (qubit,))
-
+        super().__init__(RY.unitary(angle), (qubit,))
         self.angle = angle
 
     def __str__(self):
         return "RY" + str((self.angle,) + self.qubits)
 
-class ZRotation(Gate):
+class RZ(Gate):
+    unitary = lambda angle: np.array([
+        [exp(-1.0j*angle/2), 0.0],
+        [0.0, exp(1.0j*angle/2)]
+    ])
     def __init__(self, angle, qubit):
         """ rotate the qubit around the z axis by an angle """
-        super().__init__([
-            [exp(-1.0j*angle/2), 0.0],
-            [0.0, exp(1.0j*angle/2)]
-        ], (qubit,))
-
+        super().__init__(RZ.unitary(angle), (qubit,))
         self.angle = angle
 
     def __str__(self):
         return "RZ" + str((self.angle,) + self.qubits)
-
-
-gate_map = {
-    "H": Hadamard, "CN": ControlledNot, "X": PauliX, "Y": PauliY,
-    "Z": PauliZ, "T": Tofolli, "S": Swap, "P": PhaseShift,
-    "CP": ControlledPhaseShift, "RX": XRotation, "RY": YRotation,
-    "RZ": ZRotation
-}
+    
+class U3(Gate):
+    """ u3(th, phi, lam) = Rz(phi)Ry(th)Rz(lam), see arxiv:1707.03429 """
+    unitary = lambda theta, phi, lam: np.array([
+        [exp(-1j*(phi+lam)/2)*cos(theta/2), 
+         -exp(-1j*(phi-lam)/2)*sin(theta/2)],
+        [exp(1j*(phi-lam)/2)*sin(theta/2), 
+         exp(1j*(phi+lam)/2)*cos(theta/2)]
+    ])
+    def __init__(self, theta, phi, lam, qubit):
+        super().__init__(U3.unitary(theta, phi, lam), (qubit,))
+        self.params = theta, phi, lam
+        
+    def __str__(self):
+        return "U3" + str(self.params + self.qubits)
 
 
 def string_to_gate(string):
-    """ string is a key of gate_map. return correct Gate object."""
-    i = string.index("(")
-    arg = eval(string[i:])
-    if not isinstance(arg, tuple): arg = (arg,)
-    return gate_map[string[:i]](*arg)
+    return eval(string.upper())
 
 
 def apply_gate(string, register):
     """ apply the gate represented by string to the register """
     string_to_gate(string)(register)
+
+
+def apply_algorithm(algorithm, register):
+    for gate in algorithm: apply_gate(gate, register)

@@ -3,11 +3,11 @@ import QuantumSimulator.gates as gates
 
 
 #### create gates
-H0 = gates.Hadamard(0) # initialize hadamard gate on qubit 0
-H1 = gates.Hadamard(1) # initialize hadamard gate on qubit 1
-CN24 = gates.ControlledNot(2, 4) # control qubit = 2, target qubit = 4
-R = gates.ZRotation(2.3, 5) # rotate qubit 5 around z axis by 2.3 radians
-T265 = gates.Tofolli(2, 6, 5) # tofolli on qubits 2, 6, 5
+H0 = gates.H(0) # initialize hadamard gate on qubit 0
+H1 = gates.H(1) # initialize hadamard gate on qubit 1
+CN24 = gates.CX(2, 4) # control qubit = 2, target qubit = 4
+R = gates.RZ(2.3, 5) # rotate qubit 5 around z axis by 2.3 radians
+T265 = gates.T(2, 6, 5) # tofolli on qubits 2, 6, 5
 
 
 #### initalize register with 7 qubits

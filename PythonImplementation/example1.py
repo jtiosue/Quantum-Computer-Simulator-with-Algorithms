@@ -15,7 +15,7 @@ alg = [
     "RZ(pi/2, 2)", # Rotate qubit 2 around z axis by pi/2 radians
     "RY(.23*pi, 3)", # Rotate qubit 3 around y axis by .23*pi radians
     "T(0, 2, 1)", # Tofolli gate to qubits 0, 2, and 1
-    "CN(2, 3)", # Controlled-not with control qubit 2 and target qubit 3
+    "CX(2, 3)", # Controlled-not with control qubit 2 and target qubit 3
     "Z(1)", # Pauli-Z gate to qubit 1
     "X(2)", # Pauli-X gate to qubit 2
     "Y(0)", # Pauli-Y gate to qubit 0
@@ -24,8 +24,11 @@ alg = [
 
 
 #### Run through algorithm
-for gate in alg:
-    gates.apply_gate(gate, reg) # apply the next gate to the register
+reg.apply_algorithm(alg)
+
+## Or to go one by one and see the state at each step:
+# for gate in alg:
+    # gates.apply_gate(gate, reg) # apply the next gate to the register
     # print("State of register", reg, "\n")
 
 print("State of register", reg, "\n")
